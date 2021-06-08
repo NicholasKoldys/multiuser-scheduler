@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane id="AnchorPane" prefHeight="707.0" prefWidth="919.0" xmlns="http://javafx.com/javafx/8.0.221" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.nicholaskoldys.multiuserscheduler.controller.ReportsSceneController">
+   <children>
+      <MenuBar layoutY="-2.0" prefHeight="32.0" prefWidth="919.0">
+         <menus>
+            <Menu mnemonicParsing="false" text="View">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#calendarMenuButtonAction" text="Calendar" />
+                  <MenuItem mnemonicParsing="false" onAction="#customerRecordsMenuButtonAction" text="Customer Records" />
+                  <MenuItem mnemonicParsing="false" onAction="#appointmentsScheduleMenuButtonAction" text="Appointments Schedule" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Records">
+              <items>
+                  <MenuItem mnemonicParsing="false" onAction="#customerAndAppointmentsReportsMenuButtonAction" text="Customer and Appointments" />
+                  <MenuItem mnemonicParsing="false" onAction="#appointmentsReportsMenuButtonAction" text="Appointment Types By Month" />
+                  <MenuItem mnemonicParsing="false" onAction="#usersReportsMenuButtonAction" text="Consultant Schedule" />
+                  
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="About" />
+               </items>
+            </Menu>
+         </menus>
+      </MenuBar>
+      <Button fx:id="exitButton" layoutX="801.0" layoutY="662.0" mnemonicParsing="false" onAction="#exitButtonAction" prefHeight="31.0" prefWidth="104.0" text="Exit" />
+      <Label fx:id="reportLabel" alignment="CENTER" layoutX="327.0" layoutY="36.0" prefHeight="43.0" prefWidth="268.0" text="Records" />
+      <ChoiceBox fx:id="menuComboBox" layoutX="14.0" layoutY="43.0" prefHeight="32.0" prefWidth="187.0" />
+      <ComboBox fx:id="columnComboBox" layoutX="751.0" layoutY="43.0" prefHeight="32.0" prefWidth="154.0" />
+      <TabPane layoutX="14.0" layoutY="79.0" prefHeight="577.0" prefWidth="900.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Table">
+               <content>
+                  <TableView fx:id="reportsTable" prefHeight="538.0" prefWidth="873.0">
+                     <columns>
+                        <TableColumn fx:id="col0" prefWidth="110.0" text="Col0" />
+                        <TableColumn fx:id="col1" prefWidth="110.0" text="Col1" />
+                        <TableColumn fx:id="col2" prefWidth="110.0" text="Col2" />
+                        <TableColumn fx:id="col3" prefWidth="110.0" text="Col3" />
+                        <TableColumn fx:id="col4" prefWidth="110.0" text="Col4" />
+                        <TableColumn fx:id="col5" minWidth="8.0" prefWidth="110.0" text="Col5" />
+                        <TableColumn fx:id="col6" prefWidth="110.0" text="Col6" />
+                        <TableColumn fx:id="col7" prefWidth="120.0" text="Col7" />
+                     </columns>
+                  </TableView>
+               </content>
+            </Tab>
+          <Tab text="Report">
+               <content>
+                  <BarChart fx:id="reportsGraph">
+                    <xAxis>
+                      <CategoryAxis fx:id="xAxis" side="BOTTOM" />
+                    </xAxis>
+                    <yAxis>
+                      <NumberAxis fx:id="yAxis" side="LEFT" />
+                    </yAxis>
+                  </BarChart>
+               </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>

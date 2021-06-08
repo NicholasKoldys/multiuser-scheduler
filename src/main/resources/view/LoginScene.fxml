@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="-Infinity" maxWidth="510.0"
+      minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="662.0" prefWidth="501.0"
+      style="-fx-background-color: white;"
+      xmlns="http://javafx.com/javafx/8.0.221" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dev.nicholaskoldys.multiuserscheduler.controller.LoginSceneController">
+   <children>
+      <AnchorPane maxWidth="200.0" prefWidth="200.0" style="-fx-background-color: white; -fx-border-radius: 10; -fx-border-color: lightgrey;">
+         <children>
+            <Pane layoutX="47.0" layoutY="40.0" prefHeight="96.0" prefWidth="338.0">
+               <children>
+                  <Label fx:id="titleLabel" alignment="CENTER" prefHeight="96.0" prefWidth="338.0" text="Scheduling Application Login Form" textAlignment="CENTER" wrapText="true">
+                     <font>
+                        <Font name="System Bold" size="20.0" />
+                     </font>
+                  </Label>
+               </children>
+            </Pane>
+         </children>
+         <VBox.margin>
+            <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+         </VBox.margin>
+         <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </padding>
+      </AnchorPane>
+      <AnchorPane maxWidth="1.7976931348623157E308" prefWidth="200.0">
+         <children>
+            <Pane layoutX="7.0" layoutY="12.0" prefHeight="51.0" prefWidth="465.0">
+               <children>
+                  <Label fx:id="warningLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" prefHeight="51.0" prefWidth="465.0" text="Warning Authorized Personnel Only." textAlignment="CENTER" textFill="#a10000" wrapText="true">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </Pane>
+         </children>
+         <VBox.margin>
+            <Insets left="10.0" right="10.0" />
+         </VBox.margin>
+      </AnchorPane>
+      <AnchorPane maxWidth="447.0" prefHeight="266.0" prefWidth="447.0" style="-fx-border-radius: 10; -fx-border-color: lightgrey; -fx-border-width: 3;">
+         <children>
+            <HBox layoutX="3.0" layoutY="35.0" prefHeight="51.0" prefWidth="307.0">
+               <children>
+                  <Label fx:id="nameLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="31.0" prefWidth="137.0" text="Name" textAlignment="RIGHT" wrapText="true">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <TextField fx:id="nameTextField" prefHeight="31.0" prefWidth="158.0">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+            </HBox>
+            <HBox layoutX="3.0" layoutY="86.0" prefHeight="51.0" prefWidth="307.0">
+               <children>
+                  <Label fx:id="passwordLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="31.0" prefWidth="126.0" text="Password" textAlignment="RIGHT" wrapText="true">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <PasswordField fx:id="passwordTextField" prefHeight="31.0" prefWidth="148.0">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </PasswordField>
+               </children>
+            </HBox>
+            <HBox layoutX="106.0" layoutY="137.0" prefHeight="51.0" prefWidth="241.0">
+               <children>
+                  <Button fx:id="loginButton" mnemonicParsing="false" onAction="#loginButtonAction" prefHeight="31.0" prefWidth="100.0" text="Login">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancelButtonAction" prefHeight="31.0" prefWidth="100.0" text="Cancel">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
+         </children>
+         <VBox.margin>
+            <Insets bottom="30.0" left="30.0" right="30.0" />
+         </VBox.margin>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </AnchorPane>
+      <AnchorPane prefHeight="61.0" prefWidth="499.0">
+         <children>
+            <MenuButton fx:id="localeMenuButton" layoutX="337.0" layoutY="12.0" prefWidth="150.0" text="Language" />
+         </children>
+      </AnchorPane>
+   </children>
+</VBox>

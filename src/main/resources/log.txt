@@ -1,0 +1,30 @@
+2019-10-31 22:51:08PM UTC : Application Launch
+2019-10-31 22:51:10PM UTC : User : test signed in at - 2019-10-31 17:51:10PM Central Time - Local Time.
+2019-10-31 22:51:14PM UTC : User : test signed out at - 2019-10-31 17:51:14PM Central Time - Local Time.
+2019-10-31 22:51:16PM UTC : User : test signed out at - 2019-10-31 17:51:16PM Central Time - Local Time.
+2019-10-31 22:51:16PM UTC : Application Closed
+2020-07-06 21:01:03PM UTC : Application Launch
+2020-07-06 21:56:55PM UTC : Application Launch
+2020-07-06 21:57:06PM UTC : Application Launch
+2020-07-06 21:57:40PM UTC : Application Launch
+2020-07-06 22:08:37PM UTC : Application Launch
+2020-07-06 22:11:45PM UTC : Application Launch
+2020-07-06 22:12:14PM UTC : Application Launch
+2020-07-06 22:12:23PM UTC : Application Launch
+2020-07-06 22:22:03PM UTC : Application Launch
+2020-07-07 20:33:16PM UTC : Application Launch
+2020-07-07 20:34:02PM UTC : Application Launch
+2020-07-07 20:34:25PM UTC : Application Launch
+2020-07-07 20:41:04PM UTC : Application Launch
+2020-07-07 23:06:17PM UTC : Application Launch
+2020-07-07 23:46:20PM UTC : Application Launch
+2020-07-07 23:48:07PM UTC : Application Launch
+2020-07-07 23:48:16PM UTC : Application Launch
+2020-07-07 23:51:19PM UTC : Application Launch
+2020-07-07 23:58:51PM UTC : Application Launch
+2020-07-26 22:44:24PM UTC : Application Launch
+2021-06-08 20:10:39PM UTC : Application Launch
+2021-06-08 21:52:15PM UTC : Application Launch
+2021-06-08 21:56:31PM UTC : Application Launch
+2021-06-08 21:56:46PM UTC : Application Launch
+2021-06-08 21:57:48PM UTC : Application Launch
