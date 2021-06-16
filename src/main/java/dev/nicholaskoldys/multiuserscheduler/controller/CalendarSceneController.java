@@ -568,7 +568,7 @@ public class CalendarSceneController implements Initializable {
             FXMLLoader loader = new FXMLLoader();
 
             URL url = Paths.get(
-               "src/schedulingapplication/view/AppointmentScene.fxml").toUri().toURL();
+               "src/main/resources/view/AppointmentScene.fxml").toUri().toURL();
 
             loader.setLocation(url);
             Parent root = loader.load();
@@ -613,56 +613,56 @@ public class CalendarSceneController implements Initializable {
     @FXML
     private void appointmentsScheduleButtonAction() {
         
-        Main.loadScene("AppointmentScene.fxml");
+        Main.loadScene("AppointmentScene");
     }
     
     @FXML
     private void customerRecordsButtonAction() {
         
-        Main.loadScene("CustomerScene.fxml");
+        Main.loadScene("CustomerScene");
     }
     
     @FXML
     private void reportsButtonAction() {
         
-        Main.loadScene("ReportsScene.fxml");
+        Main.loadScene("ReportsScene");
     }
     
     @FXML
     private void signOutButtonAction() {
         
         LoggingHandler.getInstance().userSignOut();
-        Main.loadScene("LoginScene.fxml");
+        Main.loadScene("LoginScene");
     }
     
     @FXML
     private void calendarMenuButtonAction() {
         
-        Main.loadScene("CalendarScene.fxml");
+        Main.loadScene("CalendarScene");
     }
     
     @FXML
     private void customerRecordsMenuButtonAction() {
         
-        Main.loadScene("CustomerScene.fxml");
+        Main.loadScene("CustomerScene");
     }
     
     @FXML
     private void appointmentsScheduleMenuButtonAction() {
         
-        Main.loadScene("AppointmentScene.fxml");
+        Main.loadScene("AppointmentScene");
     }
     
     @FXML
     private void reportsMenuButtonAction() {
         
-        Main.loadScene("ReportsScene.fxml");
+        Main.loadScene("ReportsScene");
     }
     
     @FXML
     private void weekCalendarMenuButtonAction() {
         
-        Main.loadScene("CalendarScene.fxml");
+        Main.loadScene("CalendarScene");
     }
     
     

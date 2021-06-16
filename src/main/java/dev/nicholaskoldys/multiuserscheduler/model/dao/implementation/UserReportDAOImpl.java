@@ -19,9 +19,9 @@ public class UserReportDAOImpl implements ReportDAO<UserReport> {
     
     private final String COUNT_APPOINTMENTS_PER_USER_MONTH =
             "SELECT user.userName AS Consultant,\n"
-            + " count(appointment.appointmentId) AS Count,\n"
+            + " count(appointment.appointmentId) AS 'Count',\n"
             + " month(appointment.start) AS Month\n"
-            + "from appointment\n"
+            + "FROM appointment\n"
             + "inner join user ON user.userId = appointment.userId\n"
             + "group by user.userName, Month";
     
@@ -48,7 +48,8 @@ public class UserReportDAOImpl implements ReportDAO<UserReport> {
             while(results.next()) {
                 
                 UserReport count = new UserReport(
-                        results.getInt("Count"),
+                        // TODO HSQLDB uses count long, need to change if mysql
+                        Long.valueOf(results.getLong("Count")).intValue(),
                         Month.of(results.getInt("Month")),
                         results.getString("Consultant")
                 );

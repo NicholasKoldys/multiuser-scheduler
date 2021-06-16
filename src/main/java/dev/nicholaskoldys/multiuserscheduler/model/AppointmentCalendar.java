@@ -32,26 +32,30 @@ public class AppointmentCalendar {
     
     private List<User> usersList;
     private static User currentUser;
-
     
     private static final AppointmentCalendar instance = new AppointmentCalendar();
-    
- 
+
     
     private AppointmentCalendar() {
-        
-        addressBook = AddressBook.getInstance();
         userData = UserDAOImpl.getInstance();
+        setUsersList(UserDAOImpl.getInstance().getAllUsers());
+
+        addressBook = AddressBook.getInstance();
+        addressBook.setCountriesList(
+                CountryDAOImpl.getInstance().getAllCountries());
+        addressBook.setCitiesList(
+                CityDAOImpl.getInstance().getAllCities());
+        addressBook.setAddressesList(
+                AddressDAOImpl.getInstance().getAllAddresses());
+        addressBook.loadAllCustomers();
+
         appointmentData = AppointmentDAOImpl.getInstance();
+
         schedule = Schedule.getInstance();
     }
-    
-    
-    public static AppointmentCalendar getInstance() {
-        return instance;
-    }
-    
-    
+
+    public static AppointmentCalendar getInstance() { return instance; }
+
     /**
      * 
      * @param userName
@@ -59,43 +63,27 @@ public class AppointmentCalendar {
      * @return 
      */
     public Boolean loginUser(String userName, String password) {
-        
-        User loginUser = 
-                UserDAOImpl.getInstance().userLoginRequest(
-                        userName, password);
-        
+        User loginUser = UserDAOImpl.getInstance().userLoginRequest(userName, password);
         if(loginUser != null) {
-            
             if (loginUser.isActive()) {
-            
                 setCurrentUser(loginUser);
                 return true;
             }
         }
-        
         return false;
     }
-    
     
     /**
      * 
      * @param loginUser 
      */
-    public void setCurrentUser(User loginUser) {
-        
-        currentUser = loginUser;
-    }
-    
-    
+    public void setCurrentUser(User loginUser) { currentUser = loginUser; }
+
     /**
      * 
      * @return 
      */
-    public static User getCurrentUser() {
-        
-        return currentUser;
-    }
-    
+    public static User getCurrentUser() { return currentUser; }
     
     /**
      * 
@@ -104,7 +92,6 @@ public class AppointmentCalendar {
     public void setUsersList(List<User> usersList) {
         this.usersList = usersList;
     }
-    
      
     /**
      * 
@@ -113,22 +100,21 @@ public class AppointmentCalendar {
     public List<User> getUsersList() {
         return usersList;
     }
-    
-    
+
     /**
      * 
      * @param user 
      */
-    public void addUser(User user) {
-        
-        if(lookupUser(user.getUserName(), user.getPassword(), user.getActive()) == null) {
-            
+    public User addUser(User user) {
+        User lookup = lookupUser(user.getUserName(), user.getPassword(), user.getActive());
+        if(lookup == null) {
             UserDAOImpl.getInstance().create(user);
             user.setUserId(UserDAOImpl.getInstance().getUserId(user));
             usersList.add(user);
+            return user;
         }
+        return lookup;
     }
-    
     
     /**
      * When removing User from database remove all appointments from user and place it in the admin user.
@@ -142,17 +128,14 @@ public class AppointmentCalendar {
         usersList.remove(user);
         
         for(Appointment appointment : getAllAppointments()) {
-            
             if(appointment.getUserId() == user.getUserId()) {
                 appointment.setUser(lookupUser(1));
                 appointment.setUserId(1);
             }
         }
-        
         userData.delete(user);
     }
-    
-    
+
     /**
      * 
      * @param userName
@@ -161,7 +144,6 @@ public class AppointmentCalendar {
      * @return 
      */
     public User lookupUser(String userName, String password, Boolean active) {
-        
         for(User user : usersList) {
             if(user.getUserName().equals(userName)
                     && user.getPassword().equals(password)
@@ -173,14 +155,12 @@ public class AppointmentCalendar {
         return null;
     }
     
-    
     /**
      * 
      * @param userId
      * @return 
      */
     public User lookupUser(int userId) {
-        
         for(User user : usersList) {
             if(user.getUserId() == userId) {
                 return user;
@@ -188,14 +168,12 @@ public class AppointmentCalendar {
         }
         return null;
     }
-    
-    
+
     /**
      * 
      * @param appointment 
      */
     public void addAppointment(Appointment appointment) {
-        
         appointmentData.create(appointment);
         appointment.setAppointmentId(
                 appointmentData.getAppointmentId(
@@ -208,14 +186,12 @@ public class AppointmentCalendar {
         appointmentsList.add(appointment);
         userAppointmentsList.add(appointment);
     }
-    
-    
+
     /**
      * 
      * @param appointment 
      */
     public void updateAppointment(Appointment appointment) {
-        
         //remove appointments previous startTime
         Schedule.getInstance().removeFromSchedule(
                 lookupAppointment(appointment.getAppointmentId()));
@@ -230,20 +206,16 @@ public class AppointmentCalendar {
         userAppointmentsList.add(appointment);
     }
     
-    
-    
     /**
      * 
      * @param appointment 
      */
     public void deleteAppointment(Appointment appointment) {
-        
         schedule.removeFromSchedule(appointment);
         appointmentsList.remove(appointment);
         appointmentData.delete(appointment);
         userAppointmentsList.remove(appointment);
     }
-    
     
     /**
      * 
@@ -251,42 +223,34 @@ public class AppointmentCalendar {
      * @return 
      */
     public Appointment lookupAppointmentWithTime(LocalDateTime specificTime) {
-        
         LocalDate specDate = specificTime.toLocalDate();
         LocalTime specTime = specificTime.toLocalTime();
         
         for (Appointment appointment : userAppointmentsList) {
-            
             LocalDate appDate = appointment.getStartTime().toLocalDate();
             LocalTime appTime = appointment.getStartTime().toLocalTime();
-            
             if (specDate.equals(appDate) 
                     && specTime.isBefore(appTime)
                     && specTime.plusMinutes(15).isAfter(appTime)) {
-                
                 return appointment;
             }
         }
         return null;
     }
-    
-    
+
     /**
      * 
      * @param appointmentId
      * @return 
      */
     public Appointment lookupAppointment(int appointmentId) {
-        
         for (Appointment appointment : userAppointmentsList) {
             if (appointmentId == appointment.getAppointmentId()) {
                 return appointment;
             }
         }
-        
         return null;
     }
-    
     
     /**
      * 
@@ -295,7 +259,6 @@ public class AppointmentCalendar {
      */
     public ObservableList<Appointment> lookupAppointments(
             List<Integer> appointmentIdList) {
-        
        ObservableList<Appointment> lookupAppointmentList =
                FXCollections.observableArrayList();
         
@@ -304,11 +267,9 @@ public class AppointmentCalendar {
                 lookupAppointmentList.add(lookupAppointment(appointmentId));
             }
         }
-        
         return lookupAppointmentList;
     }
-    
-    
+
     /**
      * 
      * @param appointmentTitle
@@ -316,7 +277,6 @@ public class AppointmentCalendar {
      */
     public ObservableList<Appointment> lookupAppointments(
             String appointmentTitle) {
-        
        ObservableList<Appointment> lookupAppointmentList =
                FXCollections.observableArrayList();
         
@@ -325,10 +285,8 @@ public class AppointmentCalendar {
                 lookupAppointmentList.add(appointment);
             }
         }
-        
         return lookupAppointmentList;
     }
-    
     
     /**
      * 
@@ -336,7 +294,6 @@ public class AppointmentCalendar {
      * @return 
      */
     public ObservableList<Appointment> lookupAppointments(Customer customer) {
-        
         ObservableList<Appointment> lookupAppointmentList =
                 FXCollections.observableArrayList();
         
@@ -345,20 +302,16 @@ public class AppointmentCalendar {
                 lookupAppointmentList.add(appointment);
             }
         }
-        
         return lookupAppointmentList;
     }
-    
-    
+
     /**
      * 
      * @return 
      */
     public Appointment lookupAppointment(Customer customer, User user, 
             LocalDateTime startTime, LocalDateTime endTime) {
-        
         for(Appointment appointment : userAppointmentsList) {
-            
             if(appointment.getCustomerId() == customer.getCustomerId() 
                     && appointment.getUserId() == user.getUserId()
                     && appointment.getStartTime().equals(startTime)
@@ -369,40 +322,23 @@ public class AppointmentCalendar {
         }
         return null;
     }
-
     
     /**
      * 
      * @return 
      */
-    public Boolean setupApplicationCalendar(){
-        
-        setUsersList(UserDAOImpl.getInstance().getAllUsers());
-        addressBook.setCountriesList(
-                CountryDAOImpl.getInstance().getAllCountries());
-        addressBook.setCitiesList(
-                CityDAOImpl.getInstance().getAllCities());
-        addressBook.setAddressesList(
-                AddressDAOImpl.getInstance().getAllAddresses());
-        addressBook.loadAllCustomers();
-
+    public void setupApplicationCalendar(){
         loadAllAppointments();
         schedule.createSchedule();
+    }
 
-        return false;
-    } 
-    
-    
     /**
      * 
      */
     private Boolean loadAllAppointments() {
-        
         appointmentsList = FXCollections.observableArrayList(
                 appointmentData.getAllAppointments());
-        
         List<Appointment> userOnlyAppointments = new ArrayList<>();
-        
         for(Appointment appointment : appointmentsList) {
             if(appointment.getUserId() == currentUser.getUserId()) {
                 if(appointment.getCustomer().getActive() != false) {
@@ -410,32 +346,21 @@ public class AppointmentCalendar {
                 }
             }
         }
-        
         userAppointmentsList = FXCollections.observableArrayList(userOnlyAppointments);
-        
         return (appointmentsList != null);
     }
-    
-    
+
+    /**
+     * 
+     * @return 
+     */
+    public ObservableList<Appointment> getAllAppointments() { return appointmentsList; }
     
     /**
      * 
      * @return 
      */
-    public ObservableList<Appointment> getAllAppointments() {
-        
-        return appointmentsList;
-    }
-    
-    
-    /**
-     * 
-     * @return 
-     */
-    public ObservableList<Appointment> getAllAppointmentsForUser() {
-        
-        return userAppointmentsList;
-    }
+    public ObservableList<Appointment> getAllAppointmentsForUser() { return userAppointmentsList; }
     
     
 }

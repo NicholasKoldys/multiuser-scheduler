@@ -1,7 +1,8 @@
 package dev.nicholaskoldys.multiuserscheduler.service;
 
-import com.mysql.jdbc.Connection;
+// TODO TEMPREMOVE import com.mysql.jdbc.Connection;
 import java.lang.invoke.MethodHandles;
+import java.sql.Connection;
 import java.sql.DriverManager;
 
 
@@ -20,18 +21,21 @@ public class DatabaseConnection {
     /**
      * CONSTANTS used in the connection methods
      */
-    // TODO Temp change
-//    private final static String SERVER_NAME = "3.227.166.251";
-    private final static String SERVER_NAME = "localhost";
-//    private final static String DATABASE_NAME = "U05iV3";
-    private final static String DATABASE_NAME = "test";
-    private final static String DB_URL = "jdbc:mysql://" + SERVER_NAME + "/" + DATABASE_NAME;
-//    private final static String USERNAME = "U05iV3";
-//    private final static String PASSWORD = "53688515843";
-    private final static String USERNAME = "guest";
-    private final static String PASSWORD = "secret";
-    private final static String DRIVER = "com.mysql.jdbc.Driver";
-    private static Connection instance;
+    // TODO TEMPREMOVE private final static String SERVER_NAME = "3.227.166.251";
+    //private final static String SERVER_NAME = "localhost";
+    // TODO TEMPREMOVE private final static String DATABASE_NAME = "U05iV3";
+    private final static String DATABASE_NAME = "db_schedules";
+    // TODO TEMPREMOVE private final static String DB_URL = "jdbc:mysql://" + SERVER_NAME + "/" + DATABASE_NAME;
+    //private final static String DB_URL = "jdbc:hsqldb:mem:" + DATABASE_NAME;
+    //private final static String DB_URL = "jdbc:hsqldb:hsql//" + SERVER_NAME + "/" + DATABASE_NAME;
+    private final static String DB_URL = "jdbc:hsqldb:file:" + DATABASE_NAME + "/";
+    // TODO TEMPREMOVE private final static String USERNAME = "U05iV3";
+    // TODO TEMPREMOVE private final static String PASSWORD = "53688515843";
+    private final static String USERNAME = "sa";
+    private final static String PASSWORD = "";
+    // TODO TEMPREMOVE private final static String DRIVER = "com.mysql.jdbc.Driver";
+    private final static String DRIVER = "org.hsqldb.jdbc.JDBCDriver";
+    private static Connection connectionInstance;
     
     
     /**
@@ -42,7 +46,7 @@ public class DatabaseConnection {
     public static Connection getDatabaseConnection() {
         
         try {
-            return instance;
+            return connectionInstance;
         } catch (Exception ex) {
             System.out.println("Database connection was not found."
             + "\n" + ex.getMessage());
@@ -62,20 +66,21 @@ public class DatabaseConnection {
             Class.forName(DRIVER);
         } catch (Exception ex) {
             System.out.println(
-                    "The class: " + DRIVER + " was not found."
-            + "\nFAILED in class " + MethodHandles.lookup().getClass()
-            + "\n" + ex.getMessage());
+                    "FAILED to load the jdbc"
+            + "\n" + "The class: " + DRIVER + " was NOT found."
+            + "\n" + ex.getCause());
         }
         
         try {
-            instance = (Connection) DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            connectionInstance = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            System.out.println("Database Connection Successful");
         } catch (Exception ex) {
             System.out.println(
-                    "URL, Username, and Password : " + DB_URL
-            + "\nFAILED in class " + MethodHandles.lookup().getClass()
-            + "\n" + ex.getMessage());
+                    "FAILED to Connect with: "
+            + "\n" + "URL : " + DB_URL
+            + "\n" + "Please check url, username and password."
+            + "\n" + ex.getCause());
         }
-        System.out.println("Database Connection Successful");
     }
     
     
@@ -86,14 +91,13 @@ public class DatabaseConnection {
     public static void disconnectFromDatabase() {
         
         try {
-            instance.close();
+            connectionInstance.close();
+            System.out.println("Database Disconnect Successful");
         } catch (Exception ex) {
             System.out.println(
                     "Unable to disconnect from Database connection."
             + "\nFAILED in class " + MethodHandles.lookup().getClass()
             + "\n" + ex.getMessage());
         }
-        
-        System.out.println("Database Disconnect Sucessful");
     }
 }

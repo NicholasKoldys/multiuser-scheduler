@@ -1,0 +1,489 @@
+private void insertSampleAppointments() {
+        try (PreparedStatement insertStatement = DatabaseConnection.getDatabaseConnection()
+                .prepareStatement(
+                        "INSERT INTO " + APPOINTMENT_TABLE
+                                + " (" + CUSTOMER_ID
+                                + ", " + USER_ID
+                                + ", " + APPOINTMENT_TITLE
+                                + ", " + APPOINTMENT_DESCRIPTION
+                                + ", " + APPOINTMENT_LOCATION
+                                + ", " + APPOINTMENT_CONTACT
+                                + ", " + APPOINTMENT_TYPE
+                                + ", " + APPOINTMENT_URL
+                                + ", " + APPOINTMENT_STARTTIME
+                                + ", " + APPOINTMENT_ENDTIME
+                                + ", " + CREATE_DATE
+                                + ", " + CREATE_BY
+                                + ", " + LAST_UPDATE
+                                + ", " + LAST_UPDATE_BY + ") "
+                                + "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                                + "CURRENT_TIMESTAMP" + ", " + "?" + ", "
+                                + "CURRENT_TIMESTAMP" + ", " + "?" + ")"
+                )
+        ) {
+
+            insertStatement.execute();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void insertSampleCustomers() {
+        try (PreparedStatement insertStatement = DatabaseConnection.getDatabaseConnection()
+                .prepareStatement(
+                        "INSERT INTO " + CUSTOMER_TABLE
+                                + " (" + CUSTOMER_NAME
+                                + ", " + ADDRESS_ID
+                                + ", " + CUSTOMER_ACTIVE
+                                + ", " + CREATE_DATE
+                                + ", " + CREATE_BY
+                                + ", " + LAST_UPDATE
+                                + ", " + LAST_UPDATE_BY + ") "
+                                + "VALUES (?, ?, ?, "
+                                + "CURRENT_TIMESTAMP" + ", " + "?" + ", "
+                                + "CURRENT_TIMESTAMP" + ", " + "?" + ")"
+                )
+        ) {
+
+            insertStatement.execute();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void insertSampleAddresses() {
+        try (PreparedStatement insertStatement = DatabaseConnection.getDatabaseConnection()
+                .prepareStatement(
+                        "INSERT INTO " + ADDRESS_TABLE
+                                + " (" + ADDRESS_NAME
+                                + ", " + ADDRESS2_NAME
+                                + ", " + CITY_ID
+                                + ", " + ADDRESS_POSTALCODE
+                                + ", " + ADDRESS_PHONE
+                                + ", " + CREATE_DATE
+                                + ", " + CREATE_BY
+                                + ", " + LAST_UPDATE
+                                + ", " + LAST_UPDATE_BY + ") "
+                                + "VALUES (?, ?, ?, ?, ?, "
+                                + "CURRENT_TIMESTAMP" + ", " + "?" + ", "
+                                + "CURRENT_TIMESTAMP" + ", " + "?" + ")"
+                )
+        ) {
+
+            insertStatement.execute();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void insertSampleCities() {
+        try (PreparedStatement insertStatement = DatabaseConnection.getDatabaseConnection()
+                .prepareStatement(
+                        "INSERT INTO " + CITY_TABLE
+                                + " (" + CITY_NAME
+                                + ", " + COUNTRY_ID
+                                + ", " + CREATE_DATE
+                                + ", " + CREATE_BY
+                                + ", " + LAST_UPDATE
+                                + ", " + LAST_UPDATE_BY + ") "
+                                + "VALUES ( ?, ?,"
+                                + "CURRENT_TIMESTAMP" + ", " + "?" + ", "
+                                + "CURRENT_TIMESTAMP" + ", " + "?" + ")"
+                )
+        ) {
+            insertStatement.setString(1, "CITYNAME");
+            // TODO insertStatement.setInt(2, ?);
+            insertStatement.setString(4, "NKoldys");
+            insertStatement.setString(5, "NKoldys");
+            insertStatement.execute();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void insertSampleCountries() {
+        InputStream countryInput = getClass().getClassLoader().getResourceAsStream("countryList.txt");
+
+        ReadFromFileUtil.sendInputStreamToFunc(countryInput, (country) -> {
+            try (PreparedStatement insertStatement = DatabaseConnection.getDatabaseConnection()
+                    .prepareStatement(
+                            "INSERT INTO " + COUNTRY_TABLE
+                                    + " (" + COUNTRY_NAME
+                                    + ", " + CREATE_DATE
+                                    + ", " + CREATE_BY
+                                    + ", " + LAST_UPDATE
+                                    + ", " + LAST_UPDATE_BY + ") "
+                                    + "VALUES ( ?, "
+                                    + "CURRENT_TIMESTAMP" + ", " + "?" + ", "
+                                    + "CURRENT_TIMESTAMP" + ", " + "?" + ")"
+                    )
+            ) {
+                insertStatement.setString(1, country);
+                insertStatement.setString(2, "NKoldys");
+                insertStatement.setString(3, "NKoldys");
+                insertStatement.execute();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        try {
+            countryInput.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void insertSampleUser() {
+        try (PreparedStatement insertStatement = DatabaseConnection.getDatabaseConnection()
+                .prepareStatement(
+                        "INSERT INTO " + USER_TABLE
+                                + " (" + USER_NAME
+                                + ", " + USER_PASSWORD
+                                + ", " + USER_ACTIVE
+                                + ", " + CREATE_DATE
+                                + ", " + CREATE_BY
+                                + ", " + LAST_UPDATE
+                                + ", " + LAST_UPDATE_BY + ") "
+                                + "VALUES ( ?, ?, ?,"
+                                + "CURRENT_TIMESTAMP" + ", " + "?" + ", "
+                                + "CURRENT_TIMESTAMP" + ", " + "?" + ")"
+                )
+        ) {
+            insertStatement.setString(1, "test");
+            insertStatement.setString(2, "secret");
+            insertStatement.setInt(3, 1);
+            insertStatement.setString(4, "NKoldys");
+            insertStatement.setString(5, "NKoldys");
+            insertStatement.execute();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+
+    /* -------------------------------------------------------
+    ------------- Schedule
+    ---------------------------------------------------------- */
+
+
+    //private static Map<LocalDate, Map<LocalTime, Duration>>  appointmentSchedule;
+
+    //private static Map<LocalTime, Duration> durationMap;
+
+    /**
+     *
+     * @param appointment
+     */
+    public void addToSchedule(Appointment appointment) {
+
+        schedule.add(appointment.getStartTime());
+        //schedule.put(appointment.getStartTime(), appointment);
+    }
+
+
+    /**
+     *
+     * @param appointment
+     */
+    public void removeFromSchedule(Appointment appointment) {
+
+        schedule.remove(appointment.getStartTime());
+        //schedule.remove(appointment.getStartTime(), appointment);
+    }
+
+
+    /* -------------------------------------------------------
+    ------------- Appointment
+    ---------------------------------------------------------- */
+
+
+//    /**
+//     * Initializes the Schedule mappings
+//     *
+//     */
+//    public void createAppointmentSchedule() {
+//
+//        appointmentSchedule = new HashMap<>();
+//
+//        for (Appointment appointment :
+//                AppointmentCalendar.getInstance().getAllAppointmentsForUser()) {
+//
+//            LocalDate appDate =
+//                    appointment.getStartTime().toLocalDate();
+//            LocalTime appStartTime =
+//                    appointment.getStartTime().toLocalTime();
+//            LocalTime appEndTime =
+//                    appointment.getEndTime().toLocalTime();
+//
+//            if(appointmentSchedule.containsKey(appDate)) {
+//
+//                if(appointmentSchedule.get(appDate)
+//                        .containsKey(appStartTime)) {
+//
+//                    System.out.println(
+//                    "PLEASE UPDATE DATE AND TIME FOR : "
+//                        + appointment.getAppointmentId());
+//                } else {
+//
+//                    durationMap = new HashMap<>();
+//
+//                    Duration length =
+//                            Duration.between(appStartTime, appEndTime);
+//
+//                    durationMap.put(appStartTime, length);
+//
+//                    appointmentSchedule.put(appDate, durationMap);
+//                }
+//            } else {
+//
+//                durationMap = new HashMap<>();
+//
+//                Duration length =
+//                        Duration.between(appStartTime, appEndTime);
+//
+//                durationMap.put(appStartTime, length);
+//
+//                appointmentSchedule.put(appDate, durationMap);
+//            }
+//        }
+//    }
+//
+//
+//    /**
+//     *
+//     * Checks the specified Times and tests inside the mappings for availability
+//     *
+//     * @param startDateTime
+//     * @param endDateTime
+//     * @return
+//     */
+//    public Boolean isAppointmentTimeOpen(
+//            LocalDateTime startDateTime, LocalDateTime endDateTime) {
+//
+//        LocalDate Date = startDateTime.toLocalDate();
+//        LocalTime startTime = startDateTime.toLocalTime();
+//
+//
+//        if(appointmentSchedule.containsKey(Date)) {
+//
+//            if(appointmentSchedule.get(Date)
+//                        .containsKey(startTime)) {
+//
+//                return false;
+//            } else {
+//
+//                Map<LocalTime, Duration> map =
+//                        appointmentSchedule.get(Date);
+//
+//                Duration selectDuration = Duration.between(startTime, endDateTime);
+//
+//                for(Map.Entry<LocalTime, Duration> entry :
+//                        map.entrySet()) {
+//
+//                    if(entry.getKey().isBefore(startTime)
+//                            && entry.getKey().plus(entry.getValue())
+//                                    .isAfter(startTime)){
+//                        return false;
+//                    }
+//                    if(startTime.isBefore(entry.getKey())
+//                            && startTime.plus(selectDuration)
+//                                    .isAfter(entry.getKey())) {
+//                        return false;
+//                    }
+//                }
+//                return true;
+//            }
+//        }
+//        return true;
+//    }
+
+
+
+
+
+//    /**
+//     *
+//     * Add to schedule
+//     *
+//     * @param appointment
+//     */
+//    public void addAppointmentToSchedule(
+//            Appointment appointment) {
+//
+//        LocalDate appDate =
+//                appointment.getStartTime().toLocalDate();
+//        LocalTime appStartTime =
+//                appointment.getStartTime().toLocalTime();
+//        LocalTime appEndTime =
+//                appointment.getEndTime().toLocalTime();
+//
+//        if(appointmentSchedule.containsKey(appDate)) {
+//
+//            appointmentSchedule.get(appDate).put(
+//                    appStartTime, Duration.between(
+//                            appStartTime, appEndTime));
+//        } else {
+//
+//            durationMap = new HashMap();
+//
+//            durationMap.put(
+//                    appStartTime, Duration.between(
+//                            appStartTime,appEndTime));
+//
+//            appointmentSchedule.put(
+//                    appDate, durationMap);
+//        }
+//    }
+
+
+//    /**
+//     * Remove old apply new to schedule
+//     *
+//     * @param appointment
+//     */
+//    public void updateAppointmentSchedule(
+//            Appointment appointment) {
+//
+//        LocalDate appDate =
+//                appointment.getStartTime().toLocalDate();
+//        LocalTime appStartTime =
+//                appointment.getStartTime().toLocalTime();
+//        LocalTime appEndTime =
+//                appointment.getEndTime().toLocalTime();
+//
+//        if(appointmentSchedule.containsKey(appDate)) {
+//
+//            if(appointmentSchedule.get(appDate)
+//                    .containsKey(appStartTime)){
+//
+//                appointmentSchedule.get(appDate)
+//                        .replace(appStartTime, Duration
+//                                .between(appStartTime, appEndTime));
+//            } else {
+//                appointmentSchedule.get(appDate).put(
+//                    appStartTime, Duration.between(
+//                            appStartTime, appEndTime));
+//            }
+//        } else {
+//            durationMap = new HashMap();
+//
+//            durationMap.put(
+//                    appStartTime, Duration.between(
+//                            appStartTime,appEndTime));
+//
+//            appointmentSchedule.put(
+//                    appDate, durationMap);
+//        }
+//    }
+
+
+//    /**
+//     *
+//     * remove from schedule
+//     *
+//     * @param appointment
+//     */
+//    public void deleteAppointmentFromSchedule(
+//            Appointment appointment) {
+//
+//        LocalDate appDate =
+//                appointment.getStartTime().toLocalDate();
+//        LocalTime appStartTime =
+//                appointment.getStartTime().toLocalTime();
+//        LocalTime appEndTime =
+//                appointment.getEndTime().toLocalTime();
+//
+//        if(appointmentSchedule.containsKey(appDate)) {
+//
+//            if(appointmentSchedule.get(appDate)
+//                    .containsKey(appStartTime)){
+//
+//                appointmentSchedule.get(appDate)
+//                        .remove(appStartTime, Duration.between(
+//                                appStartTime, appEndTime));
+//            }
+//        }
+//    }
+
+//    public void soundOutSchedule() {
+//
+//        Map<LocalDate, Map<LocalTime, Duration>> map =
+//                        appointmentSchedule;
+//
+//        for( entry :
+//                map.entrySet()) {
+//
+//            if(entry.getKey().isBefore(startTime)
+//                    && entry.getKey().plus(entry.getValue())
+//                            .isAfter(startTime)){
+//                return false;
+//            }
+//        }
+//    }
+
+
+
+    /* -------------------------------------------------------
+    ------------- Address Book
+    ---------------------------------------------------------- */
+
+
+//
+//        /**
+//     *
+//     * @param customerName
+//     * @param address
+//     * @param address2
+//     * @param postalCode
+//     * @param phoneNum
+//     * @param city
+//     * @param country
+//     */
+//    public void addCustomer(String customerName, String address, String address2, String postalCode, String phoneNum, String city, String country) {
+//
+//        customersList.add(addCustomerAllFields(
+//                customerName, address, address2, postalCode, phoneNum, city, country, false));
+//    }
+
+
+
+    /* -------------------------------------------------------
+    ------------- Appointment Scene Controller
+    ---------------------------------------------------------- */
+
+//            /**
+//             * Loop for filling in startTime Options
+//             * timeOfDay starts at 8 as normal work day
+//             */
+//            int timeOfDay = 8;
+//            for (int hour = 0; hour < 9; hour++) {
+//
+//                /**
+//                 * check Schedule if time is open - check between the two times given.
+//                 * Since the times are shown in 1 hour increments, only +1 hour needs
+//                 * to be tested.
+//                 */
+//                if (Schedule.getInstance().testBetweenAppointments(
+//                        selectedDate.atTime(
+//                                timeOfDay + hour, 0),
+//                        selectedDate.atTime(timeOfDay + hour + 1, 0))) {
+//
+//
+//                    /**
+//                     * Add to the list of startTimes
+//                     */
+//                    startTimeList.add(LocalTime.of(timeOfDay + hour, 0));
+//                }
+//            }
+//
+//            /**
+//             * don't show any dates if empty
+//             */
+//            if(!startTimeList.isEmpty()) {
+//
+//                ObservableList<LocalTime> startTimesList =
+//                        FXCollections.observableArrayList(startTimeList);
+//                startTimeComboBox.setItems(startTimesList);
+//            }
+//        }

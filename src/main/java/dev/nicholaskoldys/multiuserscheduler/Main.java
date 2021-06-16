@@ -2,8 +2,9 @@ package dev.nicholaskoldys.multiuserscheduler;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+
+import dev.nicholaskoldys.multiuserscheduler.service.DatabaseInitializer;
 import javafx.application.Application;
-import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.stage.Stage;
@@ -60,7 +61,7 @@ public class Main extends Application {
         
         try {
             Parent root = FXMLLoader.load(MethodHandles.lookup()
-                    .lookupClass().getResource("view/" + sceneFileName));
+                    .lookupClass().getResource("/view/" + sceneFileName + ".fxml"));
             
             Scene scene = new Scene(root);
             mainWindow.setScene(scene);
@@ -86,15 +87,33 @@ public class Main extends Application {
         
         super.init();
         
-//        TODO try {
-//            // TODO DatabaseConnection.connectToDatabase();
-//            LoggingHandler.getInstance().test();
-//        } catch (Exception ex) {
-//            System.out.println(
-//            "FATAL ERROR OCCURED : database initilization failed : " + ex.getMessage());
-//            System.exit(-1);
-//        }
-//
+        try {
+            DatabaseConnection.connectToDatabase();
+            DatabaseInitializer.initializeDatabase();
+            LoggingHandler.getInstance().test();
+        } catch (Exception ex) {
+            System.out.println(
+            "FATAL ERROR OCCURED : database initilization failed : " + ex.getMessage());
+            System.exit(-1);
+        }
+
+    }
+
+
+    /**
+     *  start method associated with Application Super Class
+     *
+     *  Loads the main window || main screen || application window
+     *
+     * @param primaryStage
+     * @throws Exception
+     */
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        mainWindow = primaryStage;
+        loadScene("LoginScene");
+        //loadScene("CalendarScene");
+        System.out.println("Application Launched");
     }
     
     
@@ -106,35 +125,18 @@ public class Main extends Application {
     @Override
     public void stop() {
         
-//        TODO try {
-//            // TODO DatabaseConnection.disconnectFromDatabase();
-//            LoggingHandler.getInstance().userSignOut();
-//            LoggingHandler.getInstance().userCloseApp();
-//        } catch (Exception ex) {
-//            System.out.println(
-//            "ERROR SHUTTING DOWN DATABASE CONNECTION... ");
-//            System.exit(-1);
-//        }
+        try {
+            DatabaseConnection.disconnectFromDatabase();
+            LoggingHandler.getInstance().userSignOut();
+            LoggingHandler.getInstance().userCloseApp();
 
+        } catch (Exception ex) {
+            System.out.println(
+            "ERROR SHUTTING DOWN DATABASE CONNECTION... ");
+            System.exit(-1);
+        }
     }
-    
-    
-    /**
-     *  start method associated with Application Super Class
-     * 
-     *  Loads the main window || main screen || application window 
-     * 
-     * @param primaryStage
-     * @throws Exception 
-     */
-    @Override
-    public void start(Stage primaryStage) throws Exception {
 
-        mainWindow = primaryStage;
-        loadScene("LoginScene.fxml");
-        System.out.println("Application Launched");
-    }
-    
     
     /**
      *  Main application loop 
@@ -145,7 +147,6 @@ public class Main extends Application {
      * @param argv 
      */
     public static void main(String[] argv) {
-        
         launch(argv);
     }
 }

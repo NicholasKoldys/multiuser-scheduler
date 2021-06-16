@@ -12,6 +12,7 @@ import dev.nicholaskoldys.multiuserscheduler.model.AppointmentCalendar;
 import dev.nicholaskoldys.multiuserscheduler.model.dao.AppointmentDAO;
 import dev.nicholaskoldys.multiuserscheduler.service.ConvertTimeService;
 import dev.nicholaskoldys.multiuserscheduler.service.DatabaseConnection;
+import dev.nicholaskoldys.multiuserscheduler.service.EnvironmentVariables;
 
 /**
  *
@@ -56,25 +57,25 @@ public class AppointmentDAOImpl implements AppointmentDAO {
             + APPOINTMENT_ENDTIME_COLUMN + " = ?";
     
     private final String INSERT_APPOINTMENT = 
-            "INSERT INTO " + TABLE_APPOINTMENT
-            + " (" + CUSTOMERID_COLUMN 
-            + ", " + USERID_COLUMN 
-            + ", " + APPOINTMENT_TITLE_COLUMN 
-            + ", " + APPOINTMENT_DESCRIPTION_COLUMN
-            + ", " + APPOINTMENT_LOCATION_COLUMN
-            + ", " + APPOINTMENT_CONTACT_COLUMN
-            + ", " + APPOINTMENT_TYPE_COLUMN
-            + ", " + APPOINTMENT_URL_COLUMN
-            + ", " + APPOINTMENT_STARTTIME_COLUMN
-            + ", " + APPOINTMENT_ENDTIME_COLUMN
-            + ", " + CREATEDATE_COLUMN 
-            + ", " + CREATEDBY_COLUMN 
-            + ", " + LASTUPDATE_COLUMN 
-            + ", " + LASTUPDATEBY_COLUMN + ") "
+            "INSERT INTO " + TABLE_APPOINTMENT + " ("
+            + CUSTOMERID_COLUMN + ", "
+            + USERID_COLUMN + ", "
+            + APPOINTMENT_TITLE_COLUMN + ", "
+            + APPOINTMENT_DESCRIPTION_COLUMN + ", "
+            + APPOINTMENT_LOCATION_COLUMN + ", "
+            + APPOINTMENT_CONTACT_COLUMN + ", "
+            + APPOINTMENT_TYPE_COLUMN + ", "
+            + APPOINTMENT_URL_COLUMN + ", "
+            + APPOINTMENT_STARTTIME_COLUMN + ", "
+            + APPOINTMENT_ENDTIME_COLUMN + ", "
+            + CREATEDATE_COLUMN + ", "
+            + CREATEDBY_COLUMN + ", "
+            + LASTUPDATE_COLUMN + ", "
+            + LASTUPDATEBY_COLUMN + ") "
             + "VALUES ( ?, ?, ?, ?, ?, ?, ?,"
-            + " ?, ?, ?,"
-            + " current_timestamp(), " + "?" 
-            + ", current_timestamp(), " + "?" + ")";
+            + " ?, ?, ?, "
+            + EnvironmentVariables.CURRENTTIME_METHOD + ", " + "?" + ","
+            + EnvironmentVariables.CURRENTTIME_METHOD + ", " + "?" + ")";
     
     private final String UPDATE_APPOINTMENT = 
             "UPDATE " + TABLE_APPOINTMENT + " SET " 
@@ -88,13 +89,13 @@ public class AppointmentDAOImpl implements AppointmentDAO {
             + APPOINTMENT_URL_COLUMN + " = ?, "
             + APPOINTMENT_STARTTIME_COLUMN + " = ?, "
             + APPOINTMENT_ENDTIME_COLUMN + " = ?, "
-            + LASTUPDATE_COLUMN + " = current_timestamp(), " 
+            + LASTUPDATE_COLUMN + " = " + EnvironmentVariables.CURRENTTIME_METHOD + ", "
             + LASTUPDATEBY_COLUMN + " = ?"
             + " WHERE " + APPOINTMENTID_COLUMN + " = ?";
     
     private final String DELETE_APPOINTMENT = 
-            "DELETE FROM " + TABLE_APPOINTMENT + " WHERE "
-            + APPOINTMENTID_COLUMN + " = ?";
+            "DELETE FROM " + TABLE_APPOINTMENT
+            + " WHERE " + APPOINTMENTID_COLUMN + " = ?";
     
     private static final AppointmentDAOImpl instance =
             new AppointmentDAOImpl();
@@ -121,23 +122,7 @@ public class AppointmentDAOImpl implements AppointmentDAO {
         try (PreparedStatement selectStatement =
                 DatabaseConnection.getDatabaseConnection().prepareStatement(SELECT_ALL_APPOINTMENT);
                 ResultSet results = selectStatement.executeQuery()) {
-            
             while (results.next()) {
-                
-//                System.out.println("APPOINTMENT -- " + results.getInt(APPOINTMENTID_COLUMN) + " : " +
-//                        AddressBook.getInstance().lookupCustomer(results.getInt(CUSTOMERID_COLUMN)) + " : " +
-//                        AppointmentCalendar.getInstance().lookupUser(results.getInt(USERID_COLUMN))+ " : " +
-//                        results.getString(APPOINTMENT_TITLE_COLUMN)+ " : " +
-//                        results.getString(APPOINTMENT_DESCRIPTION_COLUMN)+ " : " +
-//                        results.getString(APPOINTMENT_LOCATION_COLUMN)+ " : " +
-//                        results.getString(APPOINTMENT_CONTACT_COLUMN)+ " : " +
-//                        results.getString(APPOINTMENT_TYPE_COLUMN)+ " : " +
-//                        results.getString(APPOINTMENT_URL_COLUMN)+ " : " +
-//                        ConvertTimeService.fromUTC(results.getTimestamp(
-//                                APPOINTMENT_STARTTIME_COLUMN).toLocalDateTime())+ " : " +
-//                        ConvertTimeService.fromUTC(results.getTimestamp(
-//                                APPOINTMENT_ENDTIME_COLUMN).toLocalDateTime()));
-                
                 Appointment appointment = new Appointment(
                         results.getInt(APPOINTMENTID_COLUMN),
                         AddressBook.getInstance().lookupCustomer(
@@ -155,12 +140,11 @@ public class AppointmentDAOImpl implements AppointmentDAO {
                         ConvertTimeService.fromUTC(results.getTimestamp(
                                 APPOINTMENT_ENDTIME_COLUMN).toLocalDateTime())
                 );
-                
+
                 if(AddressBook.getInstance().lookupCustomer(results.getInt(CUSTOMERID_COLUMN)) == null) {
                     delete(appointment);
                     continue;
                 }
-                
                 appointmentList.add(appointment);
             }
             return appointmentList;
@@ -179,13 +163,12 @@ public class AppointmentDAOImpl implements AppointmentDAO {
      */
     @Override
     public Appointment getAppointment(int appointmentId) {
-        
         try (PreparedStatement selectStatement = DatabaseConnection.getDatabaseConnection().prepareStatement(SELECT_SPECIFIC_APPOINTMENT)) {
-            
+
             selectStatement.setInt(1, appointmentId);
             ResultSet results = selectStatement.executeQuery();
-            
             results.next();
+
             Appointment appointment = new Appointment(
                     results.getInt(APPOINTMENTID_COLUMN),
                     AddressBook.getInstance().lookupCustomer(
@@ -203,14 +186,51 @@ public class AppointmentDAOImpl implements AppointmentDAO {
                     ConvertTimeService.fromUTC(results.getTimestamp(
                             APPOINTMENT_ENDTIME_COLUMN).toLocalDateTime())
             );
-            
+
             if(AddressBook.getInstance().lookupCustomer(results.getInt(CUSTOMERID_COLUMN)) == null) {
                     delete(appointment);
                     return null;
             }
-            
             return appointment;
             
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public Appointment getAppointment(int appointmentId, boolean isAltMethod) {
+        try (PreparedStatement selectStatement = DatabaseConnection.getDatabaseConnection().prepareStatement(SELECT_SPECIFIC_APPOINTMENT)) {
+
+            selectStatement.setInt(1, appointmentId);
+            ResultSet results = selectStatement.executeQuery();
+            results.next();
+
+            Appointment appointment = new Appointment(
+                    results.getInt(APPOINTMENTID_COLUMN),
+                    CustomerDAOImpl.getInstance().getCustomer(
+                            results.getInt(CUSTOMERID_COLUMN), true),
+                    UserDAOImpl.getInstance().getUser(
+                            results.getInt(USERID_COLUMN)),
+                    results.getString(APPOINTMENT_TITLE_COLUMN),
+                    results.getString(APPOINTMENT_DESCRIPTION_COLUMN),
+                    results.getString(APPOINTMENT_LOCATION_COLUMN),
+                    results.getString(APPOINTMENT_CONTACT_COLUMN),
+                    results.getString(APPOINTMENT_TYPE_COLUMN),
+                    results.getString(APPOINTMENT_URL_COLUMN),
+                    ConvertTimeService.fromUTC(results.getTimestamp(
+                            APPOINTMENT_STARTTIME_COLUMN).toLocalDateTime()),
+                    ConvertTimeService.fromUTC(results.getTimestamp(
+                            APPOINTMENT_ENDTIME_COLUMN).toLocalDateTime())
+            );
+
+            //Delete the Appointment if customer was removed.
+            if(CustomerDAOImpl.getInstance().getCustomer(results.getInt(CUSTOMERID_COLUMN), true) == null) {
+                delete(appointment);
+                return null;
+            }
+            return appointment;
+
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -230,9 +250,9 @@ public class AppointmentDAOImpl implements AppointmentDAO {
      * @return 
      */
     public int getAppointmentId(int customerId, int userId, String title, String location, String type, LocalDateTime startTime, LocalDateTime endTime) {
-        
+
         try (PreparedStatement selectStatement = DatabaseConnection.getDatabaseConnection().prepareStatement(SELECT_SPECIFIC_APPOINTMENT_BY_ID)) {
-            
+
             selectStatement.setInt(1, customerId);
             selectStatement.setInt(2, userId);
             selectStatement.setString(3, title);
@@ -241,9 +261,8 @@ public class AppointmentDAOImpl implements AppointmentDAO {
             selectStatement.setTimestamp(6, ConvertTimeService.toMySQLDB(startTime));
             selectStatement.setTimestamp(7, ConvertTimeService.toMySQLDB(endTime));
             ResultSet results = selectStatement.executeQuery();
-            
+
             results.next();
-            
             return results.getInt(APPOINTMENTID_COLUMN);
             
         } catch (SQLException ex) {
@@ -260,11 +279,9 @@ public class AppointmentDAOImpl implements AppointmentDAO {
      */
     @Override
     public Boolean create(Appointment appointment) {
-        
         try (PreparedStatement insertStatement = 
                 DatabaseConnection.getDatabaseConnection()
                         .prepareStatement(INSERT_APPOINTMENT)) {
-            
             /*
             CUSTOMERID_COLUMN 
             + ", " + USERID_COLUMN 
@@ -295,12 +312,14 @@ public class AppointmentDAOImpl implements AppointmentDAO {
                     ConvertTimeService.toMySQLDB(appointment.getStartTime()));
             insertStatement.setTimestamp(10, 
                     ConvertTimeService.toMySQLDB(appointment.getEndTime()));
-            insertStatement.setString(11, AppointmentCalendar.getCurrentUser().getUserName());
-            insertStatement.setString(12, AppointmentCalendar.getCurrentUser().getUserName());
+            // TODO TEMp REMOVE AppointmentCalendar.getCurrentUser().getUserName()
+            insertStatement.setString(11, "NKoldys");
+            insertStatement.setString(12, "NKoldys");
             
             if (insertStatement.executeUpdate() == 1) {
                 return true;
             }
+
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -315,9 +334,9 @@ public class AppointmentDAOImpl implements AppointmentDAO {
      */
     @Override
     public Boolean update(Appointment appointment) {
-        
-        try (PreparedStatement updateStatement = DatabaseConnection.getDatabaseConnection().prepareStatement(UPDATE_APPOINTMENT)) {
-            
+        try (PreparedStatement updateStatement
+                     = DatabaseConnection.getDatabaseConnection().prepareStatement(UPDATE_APPOINTMENT)) {
+
             updateStatement.setInt(1, appointment.getCustomerId());
             updateStatement.setInt(2, appointment.getUserId());
             updateStatement.setString(3, appointment.getTitle());
@@ -337,6 +356,7 @@ public class AppointmentDAOImpl implements AppointmentDAO {
             if (updateStatement.executeUpdate() == 1) {
                 return true;
             }
+
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -351,14 +371,15 @@ public class AppointmentDAOImpl implements AppointmentDAO {
      */
     @Override
     public Boolean delete(Appointment appointment) {
-        
-        try (PreparedStatement deleteStatement = DatabaseConnection.getDatabaseConnection().prepareStatement(DELETE_APPOINTMENT)) {
+        try (PreparedStatement deleteStatement
+                     = DatabaseConnection.getDatabaseConnection().prepareStatement(DELETE_APPOINTMENT)) {
             
             deleteStatement.setInt(1, appointment.getAppointmentId());
             
             if (deleteStatement.executeUpdate() == 1) {
                 return true;
             }
+
         } catch (SQLException ex) {
             ex.printStackTrace();
         }

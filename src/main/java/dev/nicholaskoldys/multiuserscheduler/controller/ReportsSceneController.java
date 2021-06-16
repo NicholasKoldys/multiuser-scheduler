@@ -541,22 +541,22 @@ public class ReportsSceneController implements Initializable {
      */
     @FXML
     private void exitButtonAction(ActionEvent event) {
-        Main.loadScene("CalendarScene.fxml");
+        Main.loadScene("CalendarScene");
     }
     
     @FXML
     private void calendarMenuButtonAction() {
-        Main.loadScene("CalendarScene.fxml");
+        Main.loadScene("CalendarScene");
     }
     
     @FXML
     private void customerRecordsMenuButtonAction() {
-        Main.loadScene("CustomerScene.fxml");
+        Main.loadScene("CustomerScene");
     }
     
     @FXML
     private void appointmentsScheduleMenuButtonAction() {
-        Main.loadScene("AppointmentScene.fxml");
+        Main.loadScene("AppointmentScene");
     }
     
     @FXML

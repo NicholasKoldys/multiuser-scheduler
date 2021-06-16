@@ -10,6 +10,7 @@ import dev.nicholaskoldys.multiuserscheduler.model.Customer;
 import dev.nicholaskoldys.multiuserscheduler.model.AppointmentCalendar;
 import dev.nicholaskoldys.multiuserscheduler.model.dao.CustomerDAO;
 import dev.nicholaskoldys.multiuserscheduler.service.DatabaseConnection;
+import dev.nicholaskoldys.multiuserscheduler.service.EnvironmentVariables;
 
 /**
  *
@@ -42,24 +43,24 @@ public class CustomerDAOImpl implements CustomerDAO {
             + ADDRESSID_COLUMN + " = ?";
     
     private final String INSERT_CUSTOMER = 
-            "INSERT INTO " + TABLE_CUSTOMER
-            + " (" + CUSTOMER_NAME_COLUMN 
-            + ", " + ADDRESSID_COLUMN 
-            + ", " + CUSTOMER_ACTIVE_COLUMN
-            + ", " + CREATEDATE_COLUMN 
-            + ", " + CREATEDBY_COLUMN 
-            + ", " + LASTUPDATE_COLUMN 
-            + ", " + LASTUPDATEBY_COLUMN + ") "
-            + "VALUES (?, ?, ?,"
-            + " current_timestamp(), " + "?" 
-            + ", current_timestamp(), " + "?" + ")";
+            "INSERT INTO " + TABLE_CUSTOMER + " ("
+            + CUSTOMER_NAME_COLUMN + ", "
+            + ADDRESSID_COLUMN + ", "
+            + CUSTOMER_ACTIVE_COLUMN + ", "
+            + CREATEDATE_COLUMN + ", "
+            + CREATEDBY_COLUMN + ", "
+            + LASTUPDATE_COLUMN + ", "
+            + LASTUPDATEBY_COLUMN + ") "
+            + "VALUES (?, ?, ?, "
+            + EnvironmentVariables.CURRENTTIME_METHOD + ", " + "?" + ","
+            + EnvironmentVariables.CURRENTTIME_METHOD + ", " + "?" + ")";
     
     private final String UPDATE_CUSTOMER = 
             "UPDATE " + TABLE_CUSTOMER + " SET "
             + CUSTOMER_NAME_COLUMN + " = ?, " 
             + ADDRESSID_COLUMN + " = ?, " 
             + CUSTOMER_ACTIVE_COLUMN + " = ?, " 
-            + LASTUPDATE_COLUMN + " = current_timestamp(), " 
+            + LASTUPDATE_COLUMN + " = " + EnvironmentVariables.CURRENTTIME_METHOD + ", "
             + LASTUPDATEBY_COLUMN + " = ?"
             + " WHERE " + CUSTOMERID_COLUMN + "= ?";
     
@@ -139,6 +140,30 @@ public class CustomerDAOImpl implements CustomerDAO {
         }
         return null;
     }
+
+    public Customer getCustomer(int customerId, boolean isAltMethod) {
+
+        try (PreparedStatement selectStatement = DatabaseConnection.getDatabaseConnection().prepareStatement(SELECT_SPECIFIC_CUSTOMER)) {
+
+            selectStatement.setInt(1, customerId);
+            ResultSet results = selectStatement.executeQuery();
+
+            results.next();
+
+            Customer customer = new Customer(
+                    results.getInt(CUSTOMERID_COLUMN),
+                    results.getString(CUSTOMER_NAME_COLUMN),
+                    //AddressBook.getInstance().lookupAddress(results.getInt(ADDRESSID_COLUMN)),
+                    AddressDAOImpl.getInstance().getAddress(results.getInt(ADDRESSID_COLUMN), true),
+                    results.getBoolean(CUSTOMER_ACTIVE_COLUMN)
+            );
+            return customer;
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
     
     
     /**
@@ -177,9 +202,14 @@ public class CustomerDAOImpl implements CustomerDAO {
             
             insertStatement.setString(1, customer.getCustomerName());
             insertStatement.setInt(2, customer.getAddressId());
-            insertStatement.setBoolean(3, customer.getActive());
-            insertStatement.setString(4, AppointmentCalendar.getCurrentUser().getUserName());
-            insertStatement.setString(5, AppointmentCalendar.getCurrentUser().getUserName());
+            if(customer.getActive() == true) {
+                insertStatement.setInt(3, 1);
+            } else {
+                insertStatement.setInt(3, 0);
+            }
+            // TODO TEMP REMOVE AppointmentCalendar.getCurrentUser().getUserName()
+            insertStatement.setString(4, "NKoldys");
+            insertStatement.setString(5, "NKoldys");
             
             if (insertStatement.executeUpdate() == 1) {
                 return true;
@@ -203,7 +233,11 @@ public class CustomerDAOImpl implements CustomerDAO {
             
             updateStatement.setString(1, customer.getCustomerName());
             updateStatement.setInt(2, customer.getAddressId());
-            updateStatement.setBoolean(3, customer.getActive());
+            if(customer.getActive() == true) {
+                updateStatement.setInt(3, 1);
+            } else {
+                updateStatement.setInt(3, 0);
+            }
             updateStatement.setInt(4, customer.getCustomerId());
             updateStatement.setString(5, AppointmentCalendar.getCurrentUser().getUserName());
             

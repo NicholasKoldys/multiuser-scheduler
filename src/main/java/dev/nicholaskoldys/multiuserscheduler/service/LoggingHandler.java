@@ -15,7 +15,8 @@ import dev.nicholaskoldys.multiuserscheduler.model.AppointmentCalendar;
  */
 public class LoggingHandler {
     
-    File file;
+    File logFile;
+    String LOG_NAME = "log.txt";
     FileWriter writer;
     BufferedWriter buffer;
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssa z")
@@ -26,10 +27,24 @@ public class LoggingHandler {
     private static final LoggingHandler instance = new LoggingHandler();
     
     private LoggingHandler() {
-        
-        this.file = new File(Paths.get("resources/log.txt").toString());
+        File logDir = new File("log");
+        Boolean isDirExist = false;
+        if(!logDir.exists()) {
+            isDirExist = logDir.mkdirs();
+        } else {
+            isDirExist = true;
+        }
+
+        if(isDirExist) {
+            this.logFile = new File(Paths.get(logDir + "/" + LOG_NAME).toString());
+        } else {
+            this.logFile = new File(Paths.get(LOG_NAME).toString());
+            System.out.println(
+                    "Failed to create logging folder. Please see " + LOG_NAME + ", for all logs.");
+
+        }
     }
-    
+
     public static LoggingHandler getInstance() {
         
         return instance;
@@ -39,8 +54,8 @@ public class LoggingHandler {
     public void test(){
         
         try {
-            if(!file.exists()) {
-                file.createNewFile();
+            if(!logFile.exists()) {
+                logFile.createNewFile();
             }
             
             write(ConvertTimeService.toUTC(LocalDateTime.now()).format(formatter)
@@ -49,21 +64,21 @@ public class LoggingHandler {
         } catch (FileAlreadyExistsException ex) {
             System.out.println("Log failed to create new file");
         } catch (IOException ex) {
-            System.out.println("Log failed to open");
+            System.out.println(ex + "\nLog failed to open");
         }
     }
     
     
     public Boolean check() {
         
-        return file.exists();
+        return logFile.exists();
     }
     
     
     private void openLog() {
         
         try {
-            writer = new FileWriter(file, true);
+            writer = new FileWriter(logFile, true);
             buffer = new BufferedWriter(writer);
         } catch (IOException ex) {
             

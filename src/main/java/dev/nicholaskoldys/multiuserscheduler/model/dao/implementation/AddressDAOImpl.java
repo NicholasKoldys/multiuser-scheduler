@@ -10,6 +10,7 @@ import dev.nicholaskoldys.multiuserscheduler.model.AddressBook;
 import dev.nicholaskoldys.multiuserscheduler.model.AppointmentCalendar;
 import dev.nicholaskoldys.multiuserscheduler.model.dao.AddressDAO;
 import dev.nicholaskoldys.multiuserscheduler.service.DatabaseConnection;
+import dev.nicholaskoldys.multiuserscheduler.service.EnvironmentVariables;
 
 /**
  *
@@ -47,15 +48,19 @@ public class AddressDAOImpl implements AddressDAO {
             + ADDRESS_PHONE_COLUMN + " = ?";
     
     private final String INSERT_ADDRESS = 
-            "INSERT INTO " + TABLE_ADDRESS
-            + " (" + ADDRESS_COLUMN + ", " + ADDRESS2_COLUMN 
-            + ", " + CITYID_COLUMN + ", " + ADDRESS_POSTALCODE_COLUMN 
-            + ", " + ADDRESS_PHONE_COLUMN 
-            + ", " + CREATEDATE_COLUMN + ", " + CREATEDBY_COLUMN 
-            + ", " + LASTUPDATE_COLUMN + ", " + LASTUPDATEBY_COLUMN + ") "
-            + "VALUES (?, ?, ?, ?, ?" 
-            + ", current_timestamp(), " + "?" 
-            + ", current_timestamp(), " + "?" + ")";
+            "INSERT INTO " + TABLE_ADDRESS + " ("
+            + ADDRESS_COLUMN + ", "
+            + ADDRESS2_COLUMN + ", "
+            + CITYID_COLUMN + ", "
+            + ADDRESS_POSTALCODE_COLUMN + ", "
+            + ADDRESS_PHONE_COLUMN + ", "
+            + CREATEDATE_COLUMN + ", "
+            + CREATEDBY_COLUMN + ", "
+            + LASTUPDATE_COLUMN + ", "
+            + LASTUPDATEBY_COLUMN + ") "
+            + "VALUES (?, ?, ?, ?, ?, "
+            + EnvironmentVariables.CURRENTTIME_METHOD + ", " + "?" + ","
+            + EnvironmentVariables.CURRENTTIME_METHOD + ", " + "?" + ")";
     
     private final String UPDATE_ADDRESS = 
             "UPDATE " + TABLE_ADDRESS + " SET "
@@ -64,24 +69,21 @@ public class AddressDAOImpl implements AddressDAO {
             + CITYID_COLUMN + " = ?, " 
             + ADDRESS_POSTALCODE_COLUMN + " = ?, " 
             + ADDRESS_PHONE_COLUMN + " = ?, "
-            + LASTUPDATE_COLUMN + " = current_timestamp(), " 
+            + LASTUPDATE_COLUMN + " = " + EnvironmentVariables.CURRENTTIME_METHOD + ", "
             + LASTUPDATEBY_COLUMN + " = ?"
             + " WHERE " + ADDRESSID_COLUMN + "= ?";
     
     private final String DELETE_ADDRESS = 
-            "DELETE FROM " + TABLE_ADDRESS + " WHERE "
-            + ADDRESSID_COLUMN + " = ?";
-    
-    
+            "DELETE FROM " + TABLE_ADDRESS
+            + " WHERE " + ADDRESSID_COLUMN + " = ?";
+
     private static final AddressDAOImpl instance =
             new AddressDAOImpl();
     
 
-    
     private AddressDAOImpl() {
         
     }
-    
     
     /**
      * 
@@ -90,7 +92,6 @@ public class AddressDAOImpl implements AddressDAO {
     public static AddressDAOImpl getInstance() {
         return instance;
     }
-    
     
     /**
      * 
@@ -124,7 +125,6 @@ public class AddressDAOImpl implements AddressDAO {
         return null;
     }
     
-    
     /**
      * 
      * @param addressId
@@ -154,7 +154,31 @@ public class AddressDAOImpl implements AddressDAO {
         }
         return null;
     }
-    
+
+    public Address getAddress(int addressId, boolean isAltMethod) {
+
+        try (PreparedStatement selectStatement = DatabaseConnection.getDatabaseConnection().prepareStatement(SELECT_SPECIFIC_ADDRESS)) {
+
+            selectStatement.setInt(1, addressId);
+            ResultSet results = selectStatement.executeQuery();
+
+            results.next();
+            Address address = new Address(
+                    results.getInt(ADDRESSID_COLUMN),
+                    results.getString(ADDRESS_COLUMN),
+                    results.getString(ADDRESS2_COLUMN),
+                    //AddressBook.getInstance().lookupCity(results.getInt(CITYID_COLUMN)),
+                    CityDAOImpl.getInstance().getCity(results.getInt(CITYID_COLUMN), true),
+                    results.getString(ADDRESS_POSTALCODE_COLUMN),
+                    results.getString(ADDRESS_PHONE_COLUMN)
+            );
+            return address;
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
     
     /**
      * 
@@ -181,8 +205,7 @@ public class AddressDAOImpl implements AddressDAO {
         }
         return 0;
     }
-    
-    
+
     /**
      * 
      * @param address
@@ -198,8 +221,10 @@ public class AddressDAOImpl implements AddressDAO {
             insertStatement.setInt(3, address.getCityId());
             insertStatement.setString(4, address.getPostalCode());
             insertStatement.setString(5, address.getPhoneNum());
-            insertStatement.setString(6, AppointmentCalendar.getCurrentUser().getUserName());
-            insertStatement.setString(7, AppointmentCalendar.getCurrentUser().getUserName());
+            // TODO TEMP Remove  AppointmentCalendar.getCurrentUser().getUserName()
+            insertStatement.setString(6, "NKoldys");
+            // TODO TEMP Remove  AppointmentCalendar.getCurrentUser().getUserName()
+            insertStatement.setString(7, "NKoldys");
             
             if (insertStatement.executeUpdate() == 1) {
                 return true;
@@ -209,7 +234,6 @@ public class AddressDAOImpl implements AddressDAO {
         }
         return false;
     }
-    
     
     /**
      * 
@@ -237,7 +261,6 @@ public class AddressDAOImpl implements AddressDAO {
         }
         return false;
     }
-    
     
     /**
      * 

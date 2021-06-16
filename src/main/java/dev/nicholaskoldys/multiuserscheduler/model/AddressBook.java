@@ -49,42 +49,14 @@ public class AddressBook {
      */
     private AddressBook() {
         countryData = CountryDAOImpl.getInstance();
-        
         cityData = CityDAOImpl.getInstance();
-        
         addressData = AddressDAOImpl.getInstance();
-        
         customerData = CustomerDAOImpl.getInstance();
     }
 
     public static AddressBook getInstance() {
         return instance;
     }
-    
-    
-    
-    
-
-
-
-    
-//    
-//        /**
-//     * 
-//     * @param customerName
-//     * @param address
-//     * @param address2
-//     * @param postalCode
-//     * @param phoneNum
-//     * @param city
-//     * @param country 
-//     */
-//    public void addCustomer(String customerName, String address, String address2, String postalCode, String phoneNum, String city, String country) {
-//        
-//        customersList.add(addCustomerAllFields(
-//                customerName, address, address2, postalCode, phoneNum, city, country, false));
-//    }
-    
     
     /**
      * Method used as main entry method from controllers AddCustomer method
@@ -115,8 +87,7 @@ public class AddressBook {
         addAddress(adr);
         adr = lookupAddress(address, address2, ct.getCityId(), postalCode, phoneNum);
         
-        Customer cus = new Customer(customerName, adr);
-        cus.setActive(true);
+        Customer cus = new Customer(customerName, adr, true);
         
         if(!update) {
             addCustomerInternal(cus);
@@ -125,7 +96,6 @@ public class AddressBook {
         
         return cus;
     }
-    
     
     /**
      * Method to add customer from other add customer method.
@@ -142,7 +112,6 @@ public class AddressBook {
             activeCustomersList.add(customer);
         }
     }
-    
     
     /**
      * 
@@ -178,7 +147,6 @@ public class AddressBook {
         activeCustomersList.add(transitionCustomer);
     }
     
-    
     /**
      * 
      * @param customer 
@@ -203,7 +171,6 @@ public class AddressBook {
         activeCustomersList.remove(customer);
     }
     
-    
     /**
      * 
      * @param customerName
@@ -221,8 +188,7 @@ public class AddressBook {
         }
         return null;
     }
-    
-    
+
     /**
      * 
      * @param customerId
@@ -237,7 +203,6 @@ public class AddressBook {
         }
         return null;
     }
-
 
     /**
      * 
@@ -257,50 +222,30 @@ public class AddressBook {
         
         return lookupCustomerList;
     }
-    
-    
+
     /**
      * 
      */
     public Boolean loadAllCustomers() {
-                
-        
+
         customersList = FXCollections.observableArrayList(customerData.getAllCustomers());
-        
         List<Customer> activeList = new ArrayList<>();
         
         for(Customer customer : customersList) {
-
             if(customer.getActive() != false) {
                 activeList.add(customer);
             }
         }
         
         activeCustomersList = FXCollections.observableArrayList(activeList);
-        
         return (customersList != null);
     }
-    
-    
-//    /**
-//     * 
-//     * @return 
-//     */
-//    public ObservableList<Customer> getAllCustomers() {
-//        
-//        return customersList;
-//    }
-    
     
     public ObservableList<Customer> getAllActiveCustomers() {
 
         return activeCustomersList;
     }
-    
-    
-    
-    
-    
+
     /**
      * Address CRUD operations customers use
      * 
@@ -351,8 +296,6 @@ public class AddressBook {
         return null;
     }
 
-
-
     /**
      * City CRUD operations Addresses use
      * 
@@ -397,9 +340,6 @@ public class AddressBook {
         return null;
     }
 
-
-
-    
     /**
      * Country CRUD operations Cities use
      * 
@@ -422,7 +362,6 @@ public class AddressBook {
             countriesList.add(country);
         }
     }
-
 
     public Country lookupCountry(int countryId) {
 

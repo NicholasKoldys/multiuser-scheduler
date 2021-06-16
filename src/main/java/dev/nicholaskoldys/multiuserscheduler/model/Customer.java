@@ -13,18 +13,18 @@ public class Customer {
     private Boolean active;
     Address address;
     
-    public Customer(String customerName, Address address) {
+    public Customer(String customerName, Address address, Boolean active) {
         
         this.customerName = customerName;
         this.addressId = address.getAddressId();
         this.address = address;
+        this.active = active;
     }
     
     public Customer(int customerId, String customerName, Address address, Boolean active) {        
         
-        this(customerName, address);
+        this(customerName, address, active);
         this.customerId = customerId;
-        this. active = active;
     }
 
     /**

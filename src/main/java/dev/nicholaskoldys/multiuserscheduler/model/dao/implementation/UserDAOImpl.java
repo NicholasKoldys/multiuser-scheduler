@@ -9,6 +9,7 @@ import java.util.List;
 import dev.nicholaskoldys.multiuserscheduler.model.dao.UserDAO;
 import dev.nicholaskoldys.multiuserscheduler.model.User;
 import dev.nicholaskoldys.multiuserscheduler.service.DatabaseConnection;
+import dev.nicholaskoldys.multiuserscheduler.service.EnvironmentVariables;
 
 /**
  *
@@ -41,37 +42,36 @@ public class UserDAOImpl implements UserDAO {
             + USER_ACTIVE_COLUMN + " = ?";
     
     private final String INSERT_USER = 
-            "INSERT INTO " + TABLE_USER
-            + " (" + USER_NAME_COLUMN + ", " + USER_PASSWORD_COLUMN
-            + ", " + USER_ACTIVE_COLUMN
-            + ", " + CREATEDATE_COLUMN + ", " + CREATEDBY_COLUMN 
-            + ", " + LASTUPDATE_COLUMN + ", " + LASTUPDATEBY_COLUMN + ") "
-            + "VALUES (?, ?, ?, current_timestamp(), " 
-            + "\"ADMIN\"" + ", current_timestamp(), " 
-            + "\"ADMIN\"" + ")";
-    
+            "INSERT INTO " + TABLE_USER + " ("
+            + USER_NAME_COLUMN + ", "
+            + USER_PASSWORD_COLUMN + ", "
+            + USER_ACTIVE_COLUMN + ", "
+            + CREATEDATE_COLUMN + ", "
+            + CREATEDBY_COLUMN + ", "
+            + LASTUPDATE_COLUMN + ", "
+            + LASTUPDATEBY_COLUMN + ") "
+            + "VALUES (?, ?, ?, "
+            + EnvironmentVariables.CURRENTTIME_METHOD + ", " + "?" + ","
+            + EnvironmentVariables.CURRENTTIME_METHOD + ", " + "?" + ")";
+
     private final String UPDATE_USER = 
             "UPDATE " + TABLE_USER + " SET "
             + USER_NAME_COLUMN + " = ?, " 
             + USER_PASSWORD_COLUMN + " = ?, " 
             + USER_ACTIVE_COLUMN + " = ?, " 
-            + LASTUPDATE_COLUMN + " = current_timestamp(), " 
-            + LASTUPDATEBY_COLUMN + " = \"ADMIN\""
+            + LASTUPDATE_COLUMN + " = " + EnvironmentVariables.CURRENTTIME_METHOD + ", "
+            + LASTUPDATEBY_COLUMN + " = " + "?"
             + " WHERE " + USERID_COLUMN + "= ?";
     
     private final String DELETE_USER = 
             "UPDATE " + TABLE_USER + " SET "
             + USER_ACTIVE_COLUMN + " = false"
             + " WHERE " + USERID_COLUMN + " = ?";
-    
-    
+
     private static final UserDAOImpl instance = new UserDAOImpl();
     
     
-    
-    private UserDAOImpl() {
-        
-    }
+    private UserDAOImpl() { }
     
     
     /**
@@ -108,7 +108,7 @@ public class UserDAOImpl implements UserDAO {
             return userList;
             
         } catch (SQLException ex) {
-            
+            ex.printStackTrace();
         }
         return null;
     }
@@ -122,7 +122,8 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public User getUser(int userId) {
         
-        try (PreparedStatement selectStatement = DatabaseConnection.getDatabaseConnection().prepareStatement(SELECT_SPECIFIC_USER)) {
+        try (PreparedStatement selectStatement
+                     = DatabaseConnection.getDatabaseConnection().prepareStatement(SELECT_SPECIFIC_USER)) {
             
             selectStatement.setInt(1, userId);
             ResultSet results = selectStatement.executeQuery();
@@ -137,7 +138,7 @@ public class UserDAOImpl implements UserDAO {
             return user;
             
         } catch (SQLException ex) {
-            
+            ex.printStackTrace();
         }
         return null;
     }
@@ -162,7 +163,7 @@ public class UserDAOImpl implements UserDAO {
             return results.getInt(USERID_COLUMN);
             
         } catch (SQLException ex) {
-            
+            ex.printStackTrace();
         }
         return -1;
     }
@@ -202,13 +203,19 @@ public class UserDAOImpl implements UserDAO {
             
             insertStatement.setString(1, user.getUserName());
             insertStatement.setString(2, user.getPassword());
-            insertStatement.setBoolean(3, user.getActive());
+            if(user.getActive() == true) {
+                insertStatement.setInt(3, 1);
+            } else {
+                insertStatement.setInt(3, 0);
+            }
+            insertStatement.setString(4, "NKoldys");
+            insertStatement.setString(5, "NKoldys");
             
             if (insertStatement.executeUpdate() == 1) {
                 return true;
             }
         } catch (SQLException ex) {
-            
+            ex.printStackTrace();
         }
         return false;
     }
@@ -226,14 +233,19 @@ public class UserDAOImpl implements UserDAO {
             
             updateStatement.setString(1, user.getUserName());
             updateStatement.setString(2, user.getPassword());
-            updateStatement.setBoolean(3, user.getActive());
-            updateStatement.setInt(4, user.getUserId());
+            if(user.getActive() == true) {
+                updateStatement.setInt(3, 1);
+            } else {
+                updateStatement.setInt(3, 0);
+            }
+            updateStatement.setString(4, "NKoldys");
+            updateStatement.setInt(5, user.getUserId());
             
             if (updateStatement.executeUpdate() == 1) {
                 return true;
             }
         } catch (SQLException ex) {
-            
+            ex.printStackTrace();
         }
         return false;
     }
@@ -255,7 +267,7 @@ public class UserDAOImpl implements UserDAO {
                 return true;
             }
         } catch (SQLException ex) {
-            
+            ex.printStackTrace();
         }
         return false;
     }

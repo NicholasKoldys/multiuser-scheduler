@@ -9,6 +9,7 @@ import dev.nicholaskoldys.multiuserscheduler.model.Country;
 import dev.nicholaskoldys.multiuserscheduler.model.AppointmentCalendar;
 import dev.nicholaskoldys.multiuserscheduler.model.dao.CountryDAO;
 import dev.nicholaskoldys.multiuserscheduler.service.DatabaseConnection;
+import dev.nicholaskoldys.multiuserscheduler.service.EnvironmentVariables;
 
 /**
  *
@@ -37,24 +38,26 @@ public class CountryDAOImpl implements CountryDAO {
             + " WHERE "  + COUNTRY_COLUMN + " = ?";
     
     private final String INSERT_COUNTRY = 
-            "INSERT INTO " + TABLE_COUNTRY
-            + " (" + COUNTRY_COLUMN + ", " + CREATEDATE_COLUMN + ", "
-            + CREATEDBY_COLUMN + ", " + LASTUPDATE_COLUMN + ", " 
+            "INSERT INTO " + TABLE_COUNTRY + " ("
+            + COUNTRY_COLUMN + ", "
+            + CREATEDATE_COLUMN + ", "
+            + CREATEDBY_COLUMN + ", "
+            + LASTUPDATE_COLUMN + ", "
             + LASTUPDATEBY_COLUMN + ") "
-            + "VALUES (?, current_timestamp(), " 
-            + "?" + ", current_timestamp(), " 
-            + "?" + ")";
+            + "VALUES (?, "
+            + EnvironmentVariables.CURRENTTIME_METHOD + ", " + "?" + ","
+            + EnvironmentVariables.CURRENTTIME_METHOD + ", " + "?" + ")";
     
     private final String UPDATE_COUNTRY = 
             "UPDATE " + TABLE_COUNTRY + " SET "
-            + COUNTRY_COLUMN + " = ?, " 
-            + LASTUPDATE_COLUMN + " = current_timestamp(), " 
+            + COUNTRY_COLUMN + " = ?" + ", "
+            + LASTUPDATE_COLUMN + " = " + EnvironmentVariables.CURRENTTIME_METHOD + ", "
             + LASTUPDATEBY_COLUMN + " = ?"
             + " WHERE " + COUNTRYID_COLUMN + " = ?";
     
     private final String DELETE_COUNTRY = 
-            "DELETE FROM " + TABLE_COUNTRY + " WHERE "
-            + COUNTRYID_COLUMN + " = ?";
+            "DELETE FROM " + TABLE_COUNTRY
+            + " WHERE " + COUNTRYID_COLUMN + " = ?";
     
     
     private static final CountryDAOImpl instance = new CountryDAOImpl();
@@ -159,8 +162,10 @@ public class CountryDAOImpl implements CountryDAO {
         try (PreparedStatement insertStatement = DatabaseConnection.getDatabaseConnection().prepareStatement(INSERT_COUNTRY)) {
             
             insertStatement.setString(1, country.getCountry());
-            insertStatement.setString(2, AppointmentCalendar.getCurrentUser().getUserName());
-            insertStatement.setString(3, AppointmentCalendar.getCurrentUser().getUserName());
+            // TODO TEMP
+            insertStatement.setString(2, "NKoldys");
+            // TODO TEMP AppointmentCalendar.getCurrentUser().getUserName()
+            insertStatement.setString(3, "NKoldys");
             
             if (insertStatement.executeUpdate() == 1) {
                 return true;

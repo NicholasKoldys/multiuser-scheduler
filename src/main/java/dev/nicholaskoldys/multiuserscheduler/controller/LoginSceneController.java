@@ -63,28 +63,25 @@ public class LoginSceneController implements Initializable {
      */
     @FXML
     private void loginButtonAction(ActionEvent event) {
-        
-        
+
         if (AppointmentCalendar.getInstance().loginUser(nameTextField.getText(),
                 passwordTextField.getText())) {
-            
+
             System.out.println("ACTIVE USER CONFIRMED");
-            
             AppointmentCalendar.getInstance().setupApplicationCalendar();
-            Main.loadScene("CalendarScene.fxml");
-            
+            Main.loadScene("CalendarScene");
             checkForAppointmentLogin();
-            
+
             LoggingHandler.getInstance().userSignIn();
+
         } else {
-            
+
             Alert a = new Alert(AlertType.ERROR);
-            
+
             a.setHeaderText(LocalizationService.activeResourceBundle.getString("incorrectStatement"));
             a.setContentText(LocalizationService.activeResourceBundle.getString("pleaseStatement"));
-            
             a.showAndWait();
-            
+
             LoggingHandler.getInstance().userSignInAttempt(
                     nameTextField.getText());
         }
@@ -98,9 +95,8 @@ public class LoginSceneController implements Initializable {
      */
     @FXML
     private void cancelButtonAction(ActionEvent event) {
-
-            nameTextField.clear();
-            passwordTextField.clear();
+        nameTextField.clear();
+        passwordTextField.clear();
     }
     
     
@@ -110,12 +106,10 @@ public class LoginSceneController implements Initializable {
      * @return 
      */
     private EventHandler<ActionEvent> localeSelectionAction() {
-        
         return (event -> {
             LocalizationService.changeLocale(
                 ((MenuItem)event.getSource()).getId());
-            Main.loadScene("LoginScene.fxml");
-            
+            Main.loadScene("LoginScene");
         });
     }
     
@@ -126,13 +120,10 @@ public class LoginSceneController implements Initializable {
      * 
      */
     private void checkForAppointmentLogin() {
-        
-        Appointment app =
-                AppointmentCalendar.getInstance().lookupAppointmentWithTime(LocalDateTime.now());
-        
+        Appointment app = AppointmentCalendar.getInstance().lookupAppointmentWithTime(LocalDateTime.now().plusMinutes(15));
+
         if(app != null) {
             Alert a = new Alert(AlertType.INFORMATION);
-            
             a.setHeaderText("An Appointment is about to Start");
             a.setContentText("The appointment : " + app.getTitle() + " starts at " 
                     + app.getStartTime()
@@ -140,9 +131,7 @@ public class LoginSceneController implements Initializable {
                     + ".\n"
                     + "Customer : " + app.getCustomerName()
             );
-            
             a.show();
-            
             LoggingHandler.getInstance().userSignInAttempt(
                     nameTextField.getText());
         }
@@ -159,20 +148,15 @@ public class LoginSceneController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
-        
-        /**
+        /*
          * Sets Locale Specific menu items.
          */
-        localeMenuItem1 =
-                new MenuItem(LocalizationService.activeResourceBundle.getString("english"));
+        localeMenuItem1 = new MenuItem(LocalizationService.activeResourceBundle.getString("english"));
         localeMenuItem1.setId("englishMenuItem");
-        localeMenuItem2 = 
-                new MenuItem(LocalizationService.activeResourceBundle.getString("french"));
+        localeMenuItem2 = new MenuItem(LocalizationService.activeResourceBundle.getString("french"));
         localeMenuItem2.setId("frenchMenuItem");
-        
-        
-        /**
+
+        /*
          * Sets all labels to Locale specific text
          */
         titleLabel.setText(LocalizationService.activeResourceBundle.getString("title"));
@@ -182,24 +166,20 @@ public class LoginSceneController implements Initializable {
         loginButton.setText(LocalizationService.activeResourceBundle.getString("login"));
         cancelButton.setText(LocalizationService.activeResourceBundle.getString("cancel"));
         localeMenuButton.setText(LocalizationService.activeResourceBundle.getString("language"));
-                
         nameTextField.setPromptText("enter name");
         passwordTextField.setPromptText("enter password");
-        
-        
-        /**
+
+        /*
          * Sets Menu button actions
          */
         localeMenuItem1.setOnAction(localeSelectionAction());
         localeMenuItem2.setOnAction(localeSelectionAction());
-        
         localeMenuButton.getItems().addAll(localeMenuItem1, localeMenuItem2);
-        
-        
-        /**
+
+        /* TODO
          * TEMPORARY MEASURE - allows quick traversal of application text mode.
          */
         nameTextField.setText("test");
-        passwordTextField.setText("test");
+        passwordTextField.setText("secret");
     }
 }

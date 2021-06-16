@@ -14,8 +14,9 @@ dependencies {
 
 //    compile 'mysql:mysql-connector-java:8.0.20'
 //    runtime 'mysql:mysql-connector-java:8.0.20'
-    compile 'mysql:mysql-connector-java:5.1.48'
-    runtime 'mysql:mysql-connector-java:5.1.48'
+//    compile 'mysql:mysql-connector-java:5.1.48'
+//    runtime 'mysql:mysql-connector-java:5.1.48'
+    compile "org.hsqldb:hsqldb:2.3.2"
 }
 
 application {

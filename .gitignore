@@ -27,6 +27,17 @@ hs_err_pid*
 
 # intellij
 .idea/
+bin/
 
 # Ignore Gradle build output directory
 build
+
+
+# Project Specific 
+db_schedules/
+# database created programatically
+
+# Hidden
+.classpath
+.project
+.settings/

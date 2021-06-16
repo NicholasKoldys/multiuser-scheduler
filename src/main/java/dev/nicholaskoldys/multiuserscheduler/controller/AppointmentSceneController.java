@@ -94,11 +94,10 @@ public class AppointmentSceneController implements Initializable {
     */
     @FXML
     private void tableViewSelectAction() {
-        
+
         if(appointmentTableView.getSelectionModel().getSelectedItem() != null) {
-            
-            selectedAppointment =
-                    appointmentTableView.getSelectionModel().getSelectedItem();
+
+            selectedAppointment = appointmentTableView.getSelectionModel().getSelectedItem();
 
             titleTextField.setText(selectedAppointment.getTitle());
             typeComboBox.getSelectionModel().select(selectedAppointment.getType());
@@ -106,8 +105,8 @@ public class AppointmentSceneController implements Initializable {
             customerTextField.setText(selectedCustomer.getCustomerName());
             contactTextField.setText(selectedAppointment.getContact());
             locationTextField.setText(selectedAppointment.getLocation());
-            
-            /**
+
+            /*
              *  If description shows undesirable text change it.
              */
             if(selectedAppointment.getDescription().equals("") 
@@ -122,22 +121,13 @@ public class AppointmentSceneController implements Initializable {
             *   Time pulled from appointment object is UTC
             *   time is changed into defaultZone of JVM
             */
-            appointmentDatePicker.setValue(
-                    selectedAppointment.getStartTime().toLocalDate());
+            appointmentDatePicker.setValue(selectedAppointment.getStartTime().toLocalDate());
             datePickerSelectionAction();
-            startTimeComboBox.setValue(
-                    selectedAppointment.getStartTime().toLocalTime());
+            startTimeComboBox.setValue(selectedAppointment.getStartTime().toLocalTime());
             startTimeComboAction();
-            endTimeComboBox.setValue(
-                    selectedAppointment.getEndTime().toLocalTime());
-            
-            
-            
-
+            endTimeComboBox.setValue(selectedAppointment.getEndTime().toLocalTime());
             urlHyperlink.setDisable(false);
-            urlHyperlink.setText(selectedCustomer.getCustomerName() 
-                    + " : GO to Customer Record");
-            
+            urlHyperlink.setText(selectedCustomer.getCustomerName() + " : GO to Customer Record");
             addButton.setDisable(false);
             updateButton.setDisable(false);
             deleteButton.setDisable(false);
@@ -151,7 +141,6 @@ public class AppointmentSceneController implements Initializable {
     */
     @FXML
     private void customerTextFieldAction() {
-        
         customerSelectionPane.setVisible(true);
         customerTextField.setDisable(true);
     }
@@ -168,20 +157,15 @@ public class AppointmentSceneController implements Initializable {
         if (!urlHyperlink.isDisabled()) {
             try {
                 FXMLLoader loader = new FXMLLoader();
-                
-                URL url = Paths.get(
-                   "src/schedulingapplication/view/CustomerScene.fxml").toUri().toURL();
-                
+                URL url = Paths.get("src/main/resources/view/CustomerScene.fxml").toUri().toURL();
                 loader.setLocation(url);
                 Parent root = loader.load();
                 Scene scene = new Scene(root);
                 Main.getMainStage().setScene(scene);
-                
                 CustomerSceneController controller = loader.getController();
                 controller.setCustomerOnLoad(selectedCustomer);
-                
                 Main.getMainStage().show();
-                
+
             } catch (IOException ex) {
                 System.out.println(
                 "FAILED TO LOAD SCENE : from Hyperlink" + ex.getMessage());
@@ -195,7 +179,6 @@ public class AppointmentSceneController implements Initializable {
     */
     @FXML
     private void customerSelectionSelectButtonAction() {
-        
         selectedCustomer = customerSelectionTableView.getSelectionModel().getSelectedItem();
         customerTextField.setText(selectedCustomer.getCustomerName());
         customerSelectionPane.setVisible(false);
@@ -210,7 +193,6 @@ public class AppointmentSceneController implements Initializable {
     */
     @FXML
     private void customerSelectionCancelButtonAction() {
-        
         customerSelectionPane.setVisible(false);
         customerTextField.setDisable(false);
     }
@@ -221,7 +203,6 @@ public class AppointmentSceneController implements Initializable {
     */
     @FXML
     private void typeComboBoxAction() {
-        
         typeComboBox.setEditable(true);
     }
     
@@ -234,12 +215,12 @@ public class AppointmentSceneController implements Initializable {
 
         LocalDate selectedDate = appointmentDatePicker.getValue();
         startTimeComboBox.setDisable(false);
+        List<LocalTime> startTimeList = new ArrayList();
 
-        List<LocalTime> startTimeList = new ArrayList();  
-        
         if (selectedDate != null) {
-            
+
             int timeOfDay;
+
             //Changed timeOfDay from 8 (Beginning of work day) to actual
             //time's hour to prevent common expired time exception
             if(LocalDateTime.now().toLocalDate().equals(selectedDate)) {
@@ -247,14 +228,17 @@ public class AppointmentSceneController implements Initializable {
             } else {
                 timeOfDay = 8;
             }
-            
+
             for(int hour = 0; hour < 9; hour++) {
-                
+
+                //Don't exceed 5:00PM - Workers shouldn't work this late.
                 if(timeOfDay + hour == 17) {
                    break;
                 }
-                
+
+                //Increment minutes every 15.
                 for(int min = 0; min < 60; min++) {
+
                     if(min == 0) {
                         startTimeList.add(LocalTime.of(timeOfDay + hour, min));
                         continue;
@@ -264,49 +248,15 @@ public class AppointmentSceneController implements Initializable {
                     }
                 }
             }
+
             if(!startTimeList.isEmpty()) {
-                
+
                 ObservableList<LocalTime> startTimesList =
                         FXCollections.observableArrayList(startTimeList);
+
                 startTimeComboBox.setItems(startTimesList);
             }
         }
-            
-//            /**
-//             * Loop for filling in startTime Options
-//             * timeOfDay starts at 8 as normal work day
-//             */
-//            int timeOfDay = 8;
-//            for (int hour = 0; hour < 9; hour++) {
-//                
-//                /**
-//                 * check Schedule if time is open - check between the two times given.
-//                 * Since the times are shown in 1 hour increments, only +1 hour needs
-//                 * to be tested.
-//                 */
-//                if (Schedule.getInstance().testBetweenAppointments(
-//                        selectedDate.atTime(
-//                                timeOfDay + hour, 0),
-//                        selectedDate.atTime(timeOfDay + hour + 1, 0))) {
-//                    
-//                    
-//                    /**
-//                     * Add to the list of startTimes
-//                     */
-//                    startTimeList.add(LocalTime.of(timeOfDay + hour, 0));
-//                }
-//            }
-//            
-//            /**
-//             * don't show any dates if empty
-//             */
-//            if(!startTimeList.isEmpty()) {
-//                
-//                ObservableList<LocalTime> startTimesList =
-//                        FXCollections.observableArrayList(startTimeList);
-//                startTimeComboBox.setItems(startTimesList);
-//            }
-//        }
     }
     
     
@@ -318,23 +268,22 @@ public class AppointmentSceneController implements Initializable {
 
         LocalDate selectedDate = appointmentDatePicker.getValue();
         LocalTime selectedTime = startTimeComboBox.getValue();
-
-        endTimeComboBox.setDisable(false);      
-    
+        endTimeComboBox.setDisable(false);
         List<LocalTime> endTimeList = new ArrayList();       
         
         if(selectedTime != null) {
-            
+
             int timeOfDay = selectedTime.getHour();
-            
+
             for(int hour = 0; hour < 10; hour++) {
-                
+
                 if(timeOfDay + hour == 17) {
                     endTimeList.add(LocalTime.of(timeOfDay + hour, 0));
                     break;
                 }
-                
+
                 for(int min = 0; min < 60; min++) {
+
                     if(LocalTime.of(timeOfDay + hour, min).isBefore(selectedTime)
                             || LocalTime.of(timeOfDay + hour, min).equals(selectedTime)) {
                         continue;
@@ -348,44 +297,15 @@ public class AppointmentSceneController implements Initializable {
                     }
                 }
             }
+
             if(!endTimeList.isEmpty()) {
+
                 ObservableList<LocalTime> endTimesList =
                         FXCollections.observableArrayList(endTimeList);
+
                 endTimeComboBox.setItems(endTimesList);
             }
         }
-            
-//            /**
-//            * Loop for filling in endTime Options
-//            * just hours added matters.
-//            */
-//            for (int hour = 1; hour < 10; hour++) {
-//                
-//                /**
-//                 * Don't go past normal working hours of 5:00PM || 17:00PM
-//                 */
-//                if (selectedTime.getHour() + hour == 18) {
-//                    break;
-//                }
-//                
-//                /**
-//                 * Take the previously selected StartTime and test with the new 
-//                 * endTime.
-//                 */
-//                if (Schedule.getInstance().testBetweenAppointments(
-//                        selectedDate.atTime(selectedTime.getHour(), 0),
-//                        selectedDate.atTime(selectedTime.getHour() + hour, 0))) {
-//                    
-//                    endTimeList.add(LocalTime.of(selectedTime.getHour() + hour, 0));
-//                }
-//            }
-//            
-//            if(!endTimeList.isEmpty()) {
-//                ObservableList<LocalTime> endTimesList =
-//                        FXCollections.observableArrayList(endTimeList);
-//                endTimeComboBox.setItems(endTimesList);
-//            }
-//        }
     }
     
     
@@ -395,25 +315,17 @@ public class AppointmentSceneController implements Initializable {
     */
     @FXML
     private void addButtonAction() {
-        
         try {
-            
             if(!checkFieldsForEntry()) {
                 throw new EntryFieldException(
                         "Warning::attempt to add invalid appointment::", 2, "");
             }
-            
+
             LocalDateTime startTime, endTime;
+            startTime = appointmentDatePicker.getValue().atTime(startTimeComboBox.getValue());
+            endTime = appointmentDatePicker.getValue().atTime(endTimeComboBox.getValue());
 
-            startTime = appointmentDatePicker.getValue()
-                    .atTime(startTimeComboBox.getValue());
-
-            endTime = appointmentDatePicker.getValue()
-                    .atTime(endTimeComboBox.getValue());
-            
-            
-            
-            /**
+            /*
              * Basic Exception catches
              */
             if(startTime.getDayOfWeek() == DayOfWeek.SATURDAY 
@@ -429,9 +341,8 @@ public class AppointmentSceneController implements Initializable {
                 throw new AppointmentTimeException(
                         "Warning::attempt to add an overlapping appointment date::", startTime, 2);
             }
-            
 
-            /**
+            /*
              * Set unused fields to null
              */
             if(contactTextField.getText().equals("")) {
@@ -445,9 +356,8 @@ public class AppointmentSceneController implements Initializable {
 
                 descriptionTextField.setText("");
             }
-            
-            
-            /**
+
+            /*
              * Assign textFields to new Appointment
              */
             Appointment appointment = new Appointment(
@@ -462,21 +372,17 @@ public class AppointmentSceneController implements Initializable {
                     startTime,
                     endTime
             );
-            
-            /**
+
+            /*
              * need to create appointment to get appointment id to perform time check.
              */
             AppointmentCalendar.getInstance().addAppointment(appointment);
-            
             appointmentTableView.refresh();
             setupAppointmentTypeListComboBox();
-            
+
         } catch (EntryFieldException tex) {
-            
             System.out.println(tex.getMessage());
-            
         } catch (AppointmentTimeException oex) {
-            
             System.out.println(oex.getMessage());
         }
     }
@@ -488,23 +394,19 @@ public class AppointmentSceneController implements Initializable {
     */
     @FXML
     private void updateButtonAction() {
-        
         try {
-            
             if(!checkFieldsForEntry()) {
                 throw new EntryFieldException(
                         "Warning::attempt to add invalid appointment::", 2, "");
             }
-            
+
             LocalDateTime startTime, endTime;
-        
             startTime = appointmentDatePicker.getValue()
                     .atTime(startTimeComboBox.getValue());
             endTime = appointmentDatePicker.getValue()
                     .atTime(endTimeComboBox.getValue());
-            
-            
-            /**
+
+            /*
              * Basic exceptions catching
              */
             if(startTime.getDayOfWeek() == DayOfWeek.SATURDAY 
@@ -517,18 +419,16 @@ public class AppointmentSceneController implements Initializable {
                 throw new AppointmentTimeException(
                         "Warning::attempt to add appoointment with expired time", startTime, 3);
             }
-            
-            
-            /**
+
+            /*
              * set contact to current user if non-other specified
              */
             if(contactTextField.getText().equals("")) {
                     contactTextField.setText(AppointmentCalendar
                             .getCurrentUser().getUserName());
             }
-            
-            
-            /**
+
+            /*
              * Set description text back to null if not used
              */
             if(descriptionTextField.getText().equals("") 
@@ -538,9 +438,8 @@ public class AppointmentSceneController implements Initializable {
 
                 descriptionTextField.setText("");
             }
-            
-            
-            /**
+
+            /*
              * Test Time Availability
              */
             LocalDateTime oldStartTime = selectedAppointment.getStartTime(),
@@ -557,9 +456,8 @@ public class AppointmentSceneController implements Initializable {
                         "Warning::attempt to add an overlapping appointment date Final Check::",
                         startTime, 2);
             }
-            
-            
-            /**
+
+            /*
              * set appointment fields from values in textFields
              */
             selectedAppointment.setCustomerId(selectedCustomer.getCustomerId());
@@ -571,18 +469,14 @@ public class AppointmentSceneController implements Initializable {
             selectedAppointment.setType(typeComboBox.getValue().toString());
             selectedAppointment.setCustomer(selectedCustomer);
 
-            
             AppointmentCalendar.getInstance().updateAppointment(selectedAppointment);
 
             appointmentTableView.refresh();
             setupAppointmentTypeListComboBox();
-            
+
         } catch (EntryFieldException tex) {
-            
             System.out.println(tex.getMessage());
-            
         } catch (AppointmentTimeException oex) {
-            
             System.out.println(oex.getMessage());
         }
     }
@@ -594,51 +488,54 @@ public class AppointmentSceneController implements Initializable {
     private void deleteButtonAction() {
         
         if(appointmentTableView.getSelectionModel().getSelectedItem() != null) {
+
             Alert a = new Alert(AlertType.CONFIRMATION);
-                a.setContentText(
-                        "You selected to DELETE the Appointment: \n\n" 
-                        + "Title: " + selectedAppointment.getTitle() + "\n"
-                        + "Date: " + selectedAppointment.getAppointmentDate() + "\n"
-                        + "Customer: " + selectedAppointment.getCustomerName() + "\n\n"
-                        + "DELETE the Appointment by Pressing Ok..");
-                a.showAndWait()
-                        /**
-                         * LAMBDA EXPRESSION - simple to read expression
-                         * 
-                         * .filter -> filters response to ButtonType.OK
-                         * .ifPresent -> for response of filter "OK Button"...
-                         *                 ---- RUN THIS ----
-                         * 
-                         * is better than the alternative which 
-                         * goes into various methods and in-line
-                         * class calls.  it makes it very readable.
-                         */
-                    .filter(response -> response == ButtonType.OK)
-                    .ifPresent(reponse -> {
-                        AppointmentCalendar.getInstance().deleteAppointment(selectedAppointment);
-                        appointmentTableView.refresh();
-                    });
+
+            a.setContentText(
+                    "You selected to DELETE the Appointment: \n\n"
+                    + "Title: " + selectedAppointment.getTitle() + "\n"
+                    + "Date: " + selectedAppointment.getAppointmentDate() + "\n"
+                    + "Customer: " + selectedAppointment.getCustomerName() + "\n\n"
+                    + "DELETE the Appointment by Pressing Ok..");
+
+            a.showAndWait()
+                    /*
+                     * LAMBDA EXPRESSION - simple to read expression
+                     *
+                     * .filter -> filters response to ButtonType.OK
+                     * .ifPresent -> for response of filter "OK Button"...
+                     *                 ---- RUN THIS ----
+                     *
+                     * is better than the alternative which
+                     * goes into various methods and in-line
+                     * class calls.  it makes it very readable.
+                     */
+                .filter(response -> response == ButtonType.OK)
+                .ifPresent(reponse -> {
+                    AppointmentCalendar.getInstance().deleteAppointment(selectedAppointment);
+                    appointmentTableView.refresh();
+                });
         }
     }
     
     @FXML
     private void backButtonAction() {
-        Main.loadScene("CalendarScene.fxml");
+        Main.loadScene("CalendarScene");
     }
     
     @FXML
     private void calendarMenuButtonAction() {
-        Main.loadScene("CalendarScene.fxml");
+        Main.loadScene("CalendarScene");
     }
     
     @FXML
     private void customerRecordsMenuButtonAction() {
-        Main.loadScene("CustomerScene.fxml");
+        Main.loadScene("CustomerScene");
     }
     
     @FXML
     private void reportsMenuButtonAction() {
-        Main.loadScene("ReportsScene.fxml");
+        Main.loadScene("ReportsScene");
     }
     
     
@@ -650,13 +547,15 @@ public class AppointmentSceneController implements Initializable {
         
         final Callback<DatePicker, DateCell> dayCellFactory = 
             new Callback<DatePicker, DateCell>() {
+
                 @Override
                 public DateCell call(final DatePicker datePicker) {
+
                     return new DateCell() {
                         @Override
                         public void updateItem(LocalDate item, boolean empty) {
                             super.updateItem(item, empty);
-                           
+
                             if (item.isBefore(LocalDate.now()) 
                                     || item.getDayOfWeek().equals(DayOfWeek.SATURDAY)
                                     || item.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
@@ -672,23 +571,19 @@ public class AppointmentSceneController implements Initializable {
     }
     
     protected void setAppointmentOnLoad(Appointment appointment) {
-                
-        
         selectedAppointment = appointment;
+        selectedCustomer = selectedAppointment.getCustomer();
 
         titleTextField.setText(selectedAppointment.getTitle());
         typeComboBox.getSelectionModel().select(selectedAppointment.getType());
-        selectedCustomer = selectedAppointment.getCustomer();        
         customerTextField.setText(selectedCustomer.getCustomerName());
         contactTextField.setText(selectedAppointment.getContact());
         locationTextField.setText(selectedAppointment.getLocation());
 
-        /**
+        /*
          *  If description shows undesirable text change it.
          */
-        if(selectedAppointment.getDescription().equals("") 
-                || selectedAppointment.getDescription().equals("null")) {
-
+        if(selectedAppointment.getDescription().equals("") || selectedAppointment.getDescription().equals("null")) {
             descriptionTextField.setText("Enter a description here..");
         } else {
             descriptionTextField.setText(selectedAppointment.getDescription());
@@ -698,38 +593,28 @@ public class AppointmentSceneController implements Initializable {
         *   Time pulled from appointment object is UTC
         *   time is changed into defaultZone of JVM
         */
-        appointmentDatePicker.setValue(
-                selectedAppointment.getStartTime().toLocalDate());
-        startTimeComboBox.setValue(
-                selectedAppointment.getStartTime().toLocalTime());
-        endTimeComboBox.setValue(
-                selectedAppointment.getEndTime().toLocalTime());
+        appointmentDatePicker.setValue(selectedAppointment.getStartTime().toLocalDate());
+        startTimeComboBox.setValue(selectedAppointment.getStartTime().toLocalTime());
+        endTimeComboBox.setValue(selectedAppointment.getEndTime().toLocalTime());
 
         urlHyperlink.setDisable(false);
-        urlHyperlink.setText(selectedCustomer.getCustomerName() 
-                + " : GO to Customer Record");
+        urlHyperlink.setText(selectedCustomer.getCustomerName() + " : GO to Customer Record");
     }
     
     /**
      *   Fill in type List values with previously entered values.
      */
     private void setupAppointmentTypeListComboBox() {
-        
-        
-        List<Appointment> appointmentsList = AppointmentCalendar.getInstance()
-                .getAllAppointments();
-
+        List<Appointment> appointmentsList = AppointmentCalendar.getInstance().getAllAppointments();
         Set<String> typeSet = new HashSet<>();
-        
+
         for(Appointment appointment : appointmentsList) {
             typeSet.add(appointment.getType());
         }
-        
+
         List<String> transferList = new ArrayList<>(typeSet);
-        
-        ObservableList<String> allTypesList =
-                FXCollections.observableArrayList(transferList);
-        
+        ObservableList<String> allTypesList = FXCollections.observableArrayList(transferList);
+
         typeComboBox.setItems(allTypesList);
         typeComboBox.getSelectionModel().selectFirst();
     }
@@ -758,63 +643,46 @@ public class AppointmentSceneController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
-        /**
+
+        /*
          * Sets ADD / UPDATE / DELETE buttons disabled
          */
         addButton.setDisable(true);
         updateButton.setDisable(true);
         deleteButton.setDisable(true);
-        
-        /**
+
+        /*
          *  Setup click-able entities
          */
         setupAppointmentDatePicker();
         startTimeComboBox.setDisable(true);
         endTimeComboBox.setDisable(true);
         setupAppointmentTypeListComboBox();
-        
-        /**
+
+        /*
          * LAMBDA EXPRESSION -
          *  
          *  very quick setting of event. But it does not follow strict coding guidelines.
          * useful for prototyping very quickly. *If you don't lose it*
          */
         titleTextField.setOnKeyTyped(event -> addButton.setDisable(false));
-        
-        /**
+
+        /*
         *   Load all Customers from ScheduleModel List
         */
-        customerSelectionTableView.setItems(AddressBook
-                .getInstance().getAllActiveCustomers());
-        
-            customerNameCol.setCellValueFactory(
-                    new PropertyValueFactory<>("CustomerName"));
-            
-            customerAddressCol.setCellValueFactory(
-                    new PropertyValueFactory<>("AddressName"));
-            
-            customerPhoneCol.setCellValueFactory(
-                    new PropertyValueFactory<>("Phone"));
-        
-            
-        /**
+        customerSelectionTableView.setItems(AddressBook.getInstance().getAllActiveCustomers());
+        customerNameCol.setCellValueFactory(new PropertyValueFactory<>("CustomerName"));
+        customerAddressCol.setCellValueFactory(new PropertyValueFactory<>("AddressName"));
+        customerPhoneCol.setCellValueFactory(new PropertyValueFactory<>("Phone"));
+
+        /*
         *   Load all Appointments from ScheduleModel List
         *   For the Active User.
         */
-        appointmentTableView.setItems(AppointmentCalendar
-                .getInstance().getAllAppointmentsForUser());
-        
-            titleCol.setCellValueFactory(
-                    new PropertyValueFactory<>("Title"));
-            
-            typeCol.setCellValueFactory(
-                    new PropertyValueFactory<>("Type"));
-            
-            customerCol.setCellValueFactory(
-                    new PropertyValueFactory<>("CustomerName"));
-            
-            dateCol.setCellValueFactory(
-                    new PropertyValueFactory<>("AppointmentDate"));
+        appointmentTableView.setItems(AppointmentCalendar.getInstance().getAllAppointmentsForUser());
+        titleCol.setCellValueFactory(new PropertyValueFactory<>("Title"));
+        typeCol.setCellValueFactory(new PropertyValueFactory<>("Type"));
+        customerCol.setCellValueFactory(new PropertyValueFactory<>("CustomerName"));
+        dateCol.setCellValueFactory(new PropertyValueFactory<>("AppointmentDate"));
     }
 }

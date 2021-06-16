@@ -103,6 +103,9 @@ public class CustomerSceneController implements Initializable {
                             4, phoneNumTextField.getText());
                 }
             }
+
+            // TODO TEMP REMOVE
+            System.out.println(countryComboBox.getValue().toString());
             
             AddressBook.getInstance().addCustomer(
                     nameTextField.getText(),
@@ -265,22 +268,22 @@ public class CustomerSceneController implements Initializable {
      */
     @FXML
     private void backButtonAction() {
-        Main.loadScene("CalendarScene.fxml");
+        Main.loadScene("CalendarScene");
     }
     
     @FXML
     private void calendarMenuButtonAction() {
-        Main.loadScene("CalendarScene.fxml");
+        Main.loadScene("CalendarScene");
     }
     
     @FXML
     private void appointmentsScheduleMenuButtonAction() {
-        Main.loadScene("AppointmentScene.fxml");
+        Main.loadScene("AppointmentScene");
     }
     
     @FXML
     private void reportsMenuButtonAction() {
-        Main.loadScene("ReportsScene.fxml");
+        Main.loadScene("ReportsScene");
     }
     
     
@@ -347,7 +350,7 @@ public class CustomerSceneController implements Initializable {
         countrysList = AddressBook.getInstance().getCountriesList();
         allCountrysList = FXCollections.observableArrayList(countrysList);
         countryComboBox.setItems(allCountrysList);
-        //countryComboBox.getSelectionModel().select("United States");
+        countryComboBox.getSelectionModel().select("United States,US");
         
         
         /**

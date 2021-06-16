@@ -10,6 +10,7 @@ import dev.nicholaskoldys.multiuserscheduler.model.City;
 import dev.nicholaskoldys.multiuserscheduler.model.AppointmentCalendar;
 import dev.nicholaskoldys.multiuserscheduler.model.dao.CityDAO;
 import dev.nicholaskoldys.multiuserscheduler.service.DatabaseConnection;
+import dev.nicholaskoldys.multiuserscheduler.service.EnvironmentVariables;
 
 /**
  *
@@ -40,28 +41,29 @@ public class CityDAOImpl implements CityDAO {
             + COUNTRYID_COLUMN + " = ?";
     
     private final String INSERT_CITY = 
-            "INSERT INTO " + TABLE_CITY
-            + " (" + CITY_COLUMN + ", " + COUNTRYID_COLUMN 
-            + ", " + CREATEDATE_COLUMN + ", " + CREATEDBY_COLUMN 
-            + ", " + LASTUPDATE_COLUMN + ", " 
+            "INSERT INTO " + TABLE_CITY + " ("
+            + CITY_COLUMN + ", "
+            + COUNTRYID_COLUMN + ", "
+            + CREATEDATE_COLUMN + ", "
+            + CREATEDBY_COLUMN + ", "
+            + LASTUPDATE_COLUMN + ", "
             + LASTUPDATEBY_COLUMN + ") "
-            + "VALUES (?, ?, current_timestamp(), " 
-            + "?" + ", current_timestamp(), " 
-            + "?" + ")";
+            + "VALUES (?, ?, "
+            + EnvironmentVariables.CURRENTTIME_METHOD + ", " + "?" + ","
+            + EnvironmentVariables.CURRENTTIME_METHOD + ", " + "?" + ")";
     
     private final String UPDATE_CITY = 
             "UPDATE " + TABLE_CITY + " SET "
             + CITY_COLUMN + " = ?, " 
             + COUNTRYID_COLUMN + " = ?, " 
-            + LASTUPDATE_COLUMN + " = current_timestamp(), " 
+            + LASTUPDATE_COLUMN + " = " + EnvironmentVariables.CURRENTTIME_METHOD + ", "
             + LASTUPDATEBY_COLUMN + " = ?"
             + " WHERE " + CITYID_COLUMN + "= ?";
     
     private final String DELETE_CITY = 
-            "DELETE FROM " + TABLE_CITY + " WHERE "
-            + CITYID_COLUMN + " = ?";
-    
-    
+            "DELETE FROM " + TABLE_CITY
+            + " WHERE " + CITYID_COLUMN + " = ?";
+
     private static final CityDAOImpl instance = new CityDAOImpl();
     
 
@@ -72,7 +74,6 @@ public class CityDAOImpl implements CityDAO {
     public static CityDAOImpl getInstance() {
         return instance;
     }
-    
     
     /**
      * 
@@ -103,8 +104,7 @@ public class CityDAOImpl implements CityDAO {
         }
         return null;
     }
-    
-    
+
     /**
      * 
      * @param cityId
@@ -113,7 +113,8 @@ public class CityDAOImpl implements CityDAO {
     @Override
     public City getCity(int cityId) {
         
-        try (PreparedStatement selectStatement = DatabaseConnection.getDatabaseConnection().prepareStatement(SELECT_SPECIFIC_CITY)) {
+        try (PreparedStatement selectStatement
+                     = DatabaseConnection.getDatabaseConnection().prepareStatement(SELECT_SPECIFIC_CITY)) {
             
             selectStatement.setInt(1, cityId);
             ResultSet results = selectStatement.executeQuery();
@@ -131,8 +132,30 @@ public class CityDAOImpl implements CityDAO {
         }
         return null;
     }
-    
-    
+
+    public City getCity(int cityId, boolean isAltMethod) {
+
+        try (PreparedStatement selectStatement
+                     = DatabaseConnection.getDatabaseConnection().prepareStatement(SELECT_SPECIFIC_CITY)) {
+
+            selectStatement.setInt(1, cityId);
+            ResultSet results = selectStatement.executeQuery();
+
+            results.next();
+            City city = new City(
+                    results.getInt(CITYID_COLUMN),
+                    results.getString(CITY_COLUMN),
+                    //AddressBook.getInstance().lookupCountry(results.getInt(COUNTRYID_COLUMN))
+                    CountryDAOImpl.getInstance().getCountry(results.getInt(COUNTRYID_COLUMN))
+            );
+            return city;
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
     /**
      * 
      * @param city
@@ -155,8 +178,7 @@ public class CityDAOImpl implements CityDAO {
         }
         return -1;
     }
-    
-    
+
     /**
      * 
      * @param city
@@ -169,8 +191,10 @@ public class CityDAOImpl implements CityDAO {
             
             insertStatement.setString(1, city.getCity());
             insertStatement.setInt(2, city.getCountryId());
-            insertStatement.setString(3, AppointmentCalendar.getCurrentUser().getUserName());
-            insertStatement.setString(4, AppointmentCalendar.getCurrentUser().getUserName());
+            // TODO TEMP REMOVEAppointmentCalendar.getCurrentUser().getUserName()
+            insertStatement.setString(3, "NKoldys");
+            // TODO TEMP REMOVE
+            insertStatement.setString(4, "NKoldys");
             
             if (insertStatement.executeUpdate() == 1) {
                 return true;
@@ -180,7 +204,31 @@ public class CityDAOImpl implements CityDAO {
         }
         return false;
     }
-    
+
+    /**
+     *
+     * @param city
+     * @return
+     */
+    public Boolean create(String city, int countryId) {
+
+        try (PreparedStatement insertStatement = DatabaseConnection.getDatabaseConnection().prepareStatement(INSERT_CITY)) {
+
+            insertStatement.setString(1, city);
+            insertStatement.setInt(2, countryId);
+            // TODO TEMP REMOVEAppointmentCalendar.getCurrentUser().getUserName()
+            insertStatement.setString(3, "NKoldys");
+            // TODO TEMP REMOVE
+            insertStatement.setString(4, "NKoldys");
+
+            if (insertStatement.executeUpdate() == 1) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
     
     /**
      * 
@@ -205,8 +253,7 @@ public class CityDAOImpl implements CityDAO {
         }
         return false;
     }
-    
-    
+
     /**
      * 
      * @param city
