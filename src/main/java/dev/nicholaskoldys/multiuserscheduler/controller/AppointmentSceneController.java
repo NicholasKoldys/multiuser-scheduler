@@ -232,17 +232,13 @@ public class AppointmentSceneController implements Initializable {
             for(int hour = 0; hour < 9; hour++) {
 
                 //Don't exceed 5:00PM - Workers shouldn't work this late.
-                if(timeOfDay + hour == 17) {
+                if(timeOfDay + hour >= 17) {
                    break;
                 }
 
                 //Increment minutes every 15.
                 for(int min = 0; min < 60; min++) {
 
-                    if(min == 0) {
-                        startTimeList.add(LocalTime.of(timeOfDay + hour, min));
-                        continue;
-                    }
                     if(min % 15 == 0) {
                         startTimeList.add(LocalTime.of(timeOfDay + hour, min));
                     }
