@@ -35,6 +35,7 @@ build
 
 # Project Specific 
 db_schedules/
+log/
 # database created programatically
 
 # Hidden
