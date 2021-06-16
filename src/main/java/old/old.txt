@@ -92,7 +92,6 @@ private void insertSampleAppointments() {
                 )
         ) {
             insertStatement.setString(1, "CITYNAME");
-            // TODO insertStatement.setInt(2, ?);
             insertStatement.setString(4, "NKoldys");
             insertStatement.setString(5, "NKoldys");
             insertStatement.execute();

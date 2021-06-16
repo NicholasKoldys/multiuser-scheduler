@@ -291,41 +291,56 @@ public class DatabaseInitializer {
 
         if(!isDataFilled()) {
             try {
+                addUserStraight("test", "secret");
+                addUserStraight("NKoldys", "futurefunk");
+                AppointmentCalendar.getInstance().loginUser("NKoldys", "futurefunk");
 
-                UserDAOImpl.getInstance().create(new User("test", "secret", true));
-                User user1 = UserDAOImpl.getInstance().getUser(1);
 
                 InputStream countryInput = getClass().getClassLoader().getResourceAsStream("countryList.txt");
                 ReadFromFileUtil.sendInputStreamToFunc(countryInput, new Consumer<String>() {
                     @Override
                     public void accept(String country) {
-                        CountryDAOImpl.getInstance().create(new Country(country));
-                        //AddressBook.getInstance().addCountry(
+                        AddressBook.getInstance().addCountry(new Country(country));
                     }
                 });
 
-                CityDAOImpl.getInstance().create("Nashville", 233);
-                City city1 = CityDAOImpl.getInstance().getCity(1, true);
-                CityDAOImpl.getInstance().create("Chicago",233);
-                City city2 = CityDAOImpl.getInstance().getCity(2, true);
-                CityDAOImpl.getInstance().create("Seattle", 233);
-                City city3 = CityDAOImpl.getInstance().getCity(3, true);
+                Customer cus1 = AddressBook.getInstance().addCustomer(
+                        "Nick K",
+                        "1234 Acorn Ave.",
+                        "",
+                        "37000",
+                        "615-644-4444",
+                        "Nashville",
+                        "United States,US",
+                        false
+                );
+                Customer cus2 = AddressBook.getInstance().addCustomer(
+                        "Suzy Q",
+                        "777 Chonkers Rd.",
+                        "Apt3 Rm33",
+                        "64000",
+                        "376-644-4444",
+                        "Chicago",
+                        "United States,US",
+                        false
+                );
+                Customer cus3 = AddressBook.getInstance().addCustomer(
+                        "Bennie B",
+                        "420 Toke Dr.",
+                        "",
+                        "42000",
+                        "420-644-4444",
+                        "Seattle",
+                        "United States,US",
+                        false
+                );
 
-                Address adr1 = createQuickAddress("1234 Acorn Dr.", "", city1,
-                        "12345", "615-123-4567", 1);
-                Address adr2 = createQuickAddress("1 Rainbow Rd.", "", city2,
-                        "56789", "637-123-4567", 2);
-                Address adr3 = createQuickAddress("22 South Dr.", "Apt.3-rm.22",
-                        city3, "54321", "987-123-4567", 3);
-
-                Customer cus1 = createQuickCustomer("Nick K", adr1, 1);
-                Customer cus2 = createQuickCustomer("Kevin T", adr2, 2);
-                Customer cus3 = createQuickCustomer("Sandy Luu", adr3, 3);
-
+                AppointmentCalendar.getInstance().loginUser("test", "secret");
+                AppointmentCalendar.getInstance().setupApplicationCalendar();
+                User testUser = AppointmentCalendar.getCurrentUser();
 
                 LocalDateTime baseTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(8, 0));
                 List<LocalDateTime> startDTList = new ArrayList<>();
-                /*List<LocalDateTime> endTimeList = new ArrayList<>();*/
 
                 for(int hour = 0; hour < 9; hour++) {
 
@@ -349,14 +364,12 @@ public class DatabaseInitializer {
 
                 int sepRatio = (int) floor(startDTList.size()/10);
 
-                System.out.println(sepRatio);
-
                 for(int i = 0; i < 10; i++) {
 
-                    AppointmentDAOImpl.getInstance().create(
+                    AppointmentCalendar.getInstance().addAppointment(
                             new Appointment(
                                     cus1,
-                                    user1,
+                                    testUser,
                                     "Physical Exam " + i,
                                     "This is a Desc.",
                                     "Nashville, Downtown Office",
@@ -367,10 +380,10 @@ public class DatabaseInitializer {
                                     startDTList.get(i*sepRatio).plusMinutes(30)
                             )
                     );
-                    AppointmentDAOImpl.getInstance().create(
+                    AppointmentCalendar.getInstance().addAppointment(
                             new Appointment(
                                     cus2,
-                                    user1,
+                                    testUser,
                                     "Psych. Health " + i,
                                     "This is a Desc.",
                                     "Chicago, Downtown Office",
@@ -379,12 +392,11 @@ public class DatabaseInitializer {
                                     cus2.getCustomerName(),
                                     startDTList.get(i*sepRatio).plusDays(1),
                                     startDTList.get(i*sepRatio).plusDays(1).plusMinutes(30)
-                            )
-                    );
-                    AppointmentDAOImpl.getInstance().create(
+                    ));
+                    AppointmentCalendar.getInstance().addAppointment(
                             new Appointment(
                                     cus3,
-                                    user1,
+                                    testUser,
                                     "Dental Check " + i,
                                     "This is a Desc.",
                                     "Seattle, Downtown Office",
@@ -401,6 +413,31 @@ public class DatabaseInitializer {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void addUserStraight(String name, String pass) {
+        try (PreparedStatement insertStatement = DatabaseConnection.getDatabaseConnection().prepareStatement(
+                "INSERT INTO " + USER_TABLE + " ("
+                        + USER_NAME + ", "
+                        + USER_PASSWORD + ", "
+                        + USER_ACTIVE + ", "
+                        + CREATE_DATE + ", "
+                        + CREATE_BY + ", "
+                        + LAST_UPDATE + ", "
+                        + LAST_UPDATE_BY + ") "
+                        + "VALUES (?, ?, ?, "
+                        + EnvironmentVariables.CURRENTTIME_METHOD + ", " + "?" + ","
+                        + EnvironmentVariables.CURRENTTIME_METHOD + ", " + "?" + ")"
+        )) {
+            insertStatement.setString(1, name);
+            insertStatement.setString(2, pass);
+            insertStatement.setInt(3, 1);
+            insertStatement.setString(4, "NKoldys");
+            insertStatement.setString(5, "NKoldys");
+            insertStatement.execute();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }//UserDAOImpl.getInstance().create(new User("test", "secret", true));
     }
 
     private boolean isDatabaseStructureCreated() {

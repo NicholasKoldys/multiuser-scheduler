@@ -191,10 +191,8 @@ public class CityDAOImpl implements CityDAO {
             
             insertStatement.setString(1, city.getCity());
             insertStatement.setInt(2, city.getCountryId());
-            // TODO TEMP REMOVEAppointmentCalendar.getCurrentUser().getUserName()
-            insertStatement.setString(3, "NKoldys");
-            // TODO TEMP REMOVE
-            insertStatement.setString(4, "NKoldys");
+            insertStatement.setString(3, AppointmentCalendar.getCurrentUser().getUserName());
+            insertStatement.setString(4, AppointmentCalendar.getCurrentUser().getUserName());
             
             if (insertStatement.executeUpdate() == 1) {
                 return true;
@@ -216,10 +214,8 @@ public class CityDAOImpl implements CityDAO {
 
             insertStatement.setString(1, city);
             insertStatement.setInt(2, countryId);
-            // TODO TEMP REMOVEAppointmentCalendar.getCurrentUser().getUserName()
-            insertStatement.setString(3, "NKoldys");
-            // TODO TEMP REMOVE
-            insertStatement.setString(4, "NKoldys");
+            insertStatement.setString(3, AppointmentCalendar.getCurrentUser().getUserName());
+            insertStatement.setString(4, AppointmentCalendar.getCurrentUser().getUserName());
 
             if (insertStatement.executeUpdate() == 1) {
                 return true;

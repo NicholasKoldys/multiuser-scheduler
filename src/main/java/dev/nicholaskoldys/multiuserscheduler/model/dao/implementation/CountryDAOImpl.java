@@ -162,10 +162,8 @@ public class CountryDAOImpl implements CountryDAO {
         try (PreparedStatement insertStatement = DatabaseConnection.getDatabaseConnection().prepareStatement(INSERT_COUNTRY)) {
             
             insertStatement.setString(1, country.getCountry());
-            // TODO TEMP
-            insertStatement.setString(2, "NKoldys");
-            // TODO TEMP AppointmentCalendar.getCurrentUser().getUserName()
-            insertStatement.setString(3, "NKoldys");
+            insertStatement.setString(2, AppointmentCalendar.getCurrentUser().getUserName());
+            insertStatement.setString(3, AppointmentCalendar.getCurrentUser().getUserName());
             
             if (insertStatement.executeUpdate() == 1) {
                 return true;

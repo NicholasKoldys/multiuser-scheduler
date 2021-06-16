@@ -312,9 +312,8 @@ public class AppointmentDAOImpl implements AppointmentDAO {
                     ConvertTimeService.toMySQLDB(appointment.getStartTime()));
             insertStatement.setTimestamp(10, 
                     ConvertTimeService.toMySQLDB(appointment.getEndTime()));
-            // TODO TEMp REMOVE AppointmentCalendar.getCurrentUser().getUserName()
-            insertStatement.setString(11, "NKoldys");
-            insertStatement.setString(12, "NKoldys");
+            insertStatement.setString(11, AppointmentCalendar.getCurrentUser().getUserName());
+            insertStatement.setString(12, AppointmentCalendar.getCurrentUser().getUserName());
             
             if (insertStatement.executeUpdate() == 1) {
                 return true;

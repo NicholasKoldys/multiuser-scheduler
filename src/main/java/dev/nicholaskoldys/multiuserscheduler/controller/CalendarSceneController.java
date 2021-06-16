@@ -596,17 +596,6 @@ public class CalendarSceneController implements Initializable {
         dayOfMonthCalendarListPane.setVisible(false);
     }
     
-    
-    /**
-     * PLANNED TODO - possible appointment list view action for the week view
-     */
-    @FXML
-    private void dayOfWeekCalendarAction() {
-        
-        //Select From List
-    }
-    
-    
     /**
      * Navigation buttons and menus
      */

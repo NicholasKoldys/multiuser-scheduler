@@ -176,7 +176,7 @@ public class LoginSceneController implements Initializable {
         localeMenuItem2.setOnAction(localeSelectionAction());
         localeMenuButton.getItems().addAll(localeMenuItem1, localeMenuItem2);
 
-        /* TODO
+        /* TODO REMOVE - optional
          * TEMPORARY MEASURE - allows quick traversal of application text mode.
          */
         nameTextField.setText("test");

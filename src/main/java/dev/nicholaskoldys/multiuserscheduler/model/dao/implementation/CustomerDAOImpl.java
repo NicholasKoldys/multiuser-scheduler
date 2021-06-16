@@ -207,9 +207,8 @@ public class CustomerDAOImpl implements CustomerDAO {
             } else {
                 insertStatement.setInt(3, 0);
             }
-            // TODO TEMP REMOVE AppointmentCalendar.getCurrentUser().getUserName()
-            insertStatement.setString(4, "NKoldys");
-            insertStatement.setString(5, "NKoldys");
+            insertStatement.setString(4, AppointmentCalendar.getCurrentUser().getUserName());
+            insertStatement.setString(5, AppointmentCalendar.getCurrentUser().getUserName());
             
             if (insertStatement.executeUpdate() == 1) {
                 return true;

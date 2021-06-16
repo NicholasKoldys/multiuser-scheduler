@@ -103,9 +103,6 @@ public class CustomerSceneController implements Initializable {
                             4, phoneNumTextField.getText());
                 }
             }
-
-            // TODO TEMP REMOVE
-            System.out.println(countryComboBox.getValue().toString());
             
             AddressBook.getInstance().addCustomer(
                     nameTextField.getText(),

@@ -1,6 +1,5 @@
 package dev.nicholaskoldys.multiuserscheduler.service;
 
-// TODO TEMPREMOVE import com.mysql.jdbc.Connection;
 import java.lang.invoke.MethodHandles;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -21,19 +20,11 @@ public class DatabaseConnection {
     /**
      * CONSTANTS used in the connection methods
      */
-    // TODO TEMPREMOVE private final static String SERVER_NAME = "3.227.166.251";
-    //private final static String SERVER_NAME = "localhost";
-    // TODO TEMPREMOVE private final static String DATABASE_NAME = "U05iV3";
     private final static String DATABASE_NAME = "db_schedules";
-    // TODO TEMPREMOVE private final static String DB_URL = "jdbc:mysql://" + SERVER_NAME + "/" + DATABASE_NAME;
-    //private final static String DB_URL = "jdbc:hsqldb:mem:" + DATABASE_NAME;
-    //private final static String DB_URL = "jdbc:hsqldb:hsql//" + SERVER_NAME + "/" + DATABASE_NAME;
-    private final static String DB_URL = "jdbc:hsqldb:file:" + DATABASE_NAME + "/";
-    // TODO TEMPREMOVE private final static String USERNAME = "U05iV3";
-    // TODO TEMPREMOVE private final static String PASSWORD = "53688515843";
+    private final static String HSQL_DB_TYPE = "file:";
+    private final static String DB_URL = "jdbc:hsqldb:" + HSQL_DB_TYPE + DATABASE_NAME + "/";
     private final static String USERNAME = "sa";
     private final static String PASSWORD = "";
-    // TODO TEMPREMOVE private final static String DRIVER = "com.mysql.jdbc.Driver";
     private final static String DRIVER = "org.hsqldb.jdbc.JDBCDriver";
     private static Connection connectionInstance;
     

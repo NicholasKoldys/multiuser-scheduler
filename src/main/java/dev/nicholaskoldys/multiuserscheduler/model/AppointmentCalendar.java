@@ -33,7 +33,7 @@ public class AppointmentCalendar {
     private List<User> usersList;
     private static User currentUser;
     
-    private static final AppointmentCalendar instance = new AppointmentCalendar();
+    private static final AppointmentCalendar instance= new AppointmentCalendar();
 
     
     private AppointmentCalendar() {
@@ -77,7 +77,7 @@ public class AppointmentCalendar {
      * 
      * @param loginUser 
      */
-    public void setCurrentUser(User loginUser) { currentUser = loginUser; }
+    private void setCurrentUser(User loginUser) { currentUser = loginUser; }
 
     /**
      * 
@@ -361,6 +361,4 @@ public class AppointmentCalendar {
      * @return 
      */
     public ObservableList<Appointment> getAllAppointmentsForUser() { return userAppointmentsList; }
-    
-    
 }

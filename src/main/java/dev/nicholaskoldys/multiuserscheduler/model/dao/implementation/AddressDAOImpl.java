@@ -221,10 +221,8 @@ public class AddressDAOImpl implements AddressDAO {
             insertStatement.setInt(3, address.getCityId());
             insertStatement.setString(4, address.getPostalCode());
             insertStatement.setString(5, address.getPhoneNum());
-            // TODO TEMP Remove  AppointmentCalendar.getCurrentUser().getUserName()
-            insertStatement.setString(6, "NKoldys");
-            // TODO TEMP Remove  AppointmentCalendar.getCurrentUser().getUserName()
-            insertStatement.setString(7, "NKoldys");
+            insertStatement.setString(6, AppointmentCalendar.getCurrentUser().getUserName());
+            insertStatement.setString(7, AppointmentCalendar.getCurrentUser().getUserName());
             
             if (insertStatement.executeUpdate() == 1) {
                 return true;
