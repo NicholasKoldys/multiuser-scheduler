@@ -32,13 +32,13 @@ bin/
 # Ignore Gradle build output directory
 build
 
-
-# Project Specific 
-db_schedules/
-log/
-# database created programatically
-
 # Hidden
 .classpath
 .project
 .settings/
+
+# Project Specific
+WGU*/
+db_schedules/
+log/
+# database created programatically
